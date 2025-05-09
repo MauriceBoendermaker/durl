@@ -21,4 +21,17 @@
             margin-bottom: 0;
         }
     }
+
+    .footer-bottom-row {
+        margin-left: 100px;
+        transition: margin 0.3s ease;
+
+        a {
+            color: $primary-light;
+
+            &:hover {
+                color: $secondary-color;
+            }
+        }
+    }
 }
