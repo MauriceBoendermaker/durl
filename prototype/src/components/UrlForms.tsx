@@ -15,6 +15,7 @@ export function UrlForms() {
     const qrRef = useRef<HTMLCanvasElement | null>(null);
     const cardRef = useRef<HTMLDivElement | null>(null);
     const [urlInvalid, setUrlInvalid] = useState(false);
+    const [CRCVersion, setCRCVersion] = useState(true);
 
     function isValidUrl(string: string) {
         let url;
@@ -88,26 +89,48 @@ export function UrlForms() {
         }
     }
     return (
-        <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-                <input
-                    type="text"
-                    value={originalUrl}
-                    onChange={(e) => {
-                        setOriginalUrl(e.target.value);
-                        setUrlInvalid(false);
-                    }}
-                    placeholder="Original URL (e.g. https://aboutcircles.com/)"
-                    className={`form-control ${urlInvalid ? 'is-invalid' : ''}`}
+        <div>
+            <ul className="nav nav-tabs">
+                <li className="nav-item">
+                    <button
+                        className={`nav-link ${CRCVersion ? 'active' : ''}`}
+                        onClick={() => setCRCVersion(true)}
+                    >
+                        custom CRC link
+                    </button>
+                </li>
+                <li className="nav-item">
+                    <button
+                        className={`nav-link ${!CRCVersion ? 'active' : ''}`}
+                        onClick={() => setCRCVersion(false)}
+                    >
+                        Random link
+                    </button>
+                </li>
+            </ul>
 
-                />
-            </div>
-            <div className="button-group mt-3">
-                <button type="submit" className="btn btn-primary">Submit to Blockchain</button>
-                {/* <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
+            {!CRCVersion && (
+            <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                    <input
+                        type="text"
+                        value={originalUrl}
+                        onChange={(e) => {
+                            setOriginalUrl(e.target.value);
+                            setUrlInvalid(false);
+                        }}
+                        placeholder="Original URL (e.g. https://aboutcircles.com/)"
+                        className={`form-control ${urlInvalid ? 'is-invalid' : ''}`}
+
+                    />
+                </div>
+                <div className="button-group mt-3">
+                    <button type="submit" className="btn btn-primary">Submit to Blockchain</button>
+                    {/* <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
                                         Generate QR Code
                                     </button> */}
-            </div>
-        </form>
+                </div>
+            </form>)}
+        </div>
     )
 }
