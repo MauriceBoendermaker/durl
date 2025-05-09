@@ -55,6 +55,11 @@ function App() {
       </Routes>
 
       <Footer />
+      <div
+        id="toast-container"
+        className="toast-container position-fixed bottom-0 end-0 p-3"
+        style={{ zIndex: 1055 }}
+      ></div>
     </Router>
   );
 }
