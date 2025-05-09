@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { ethers } from 'ethers';
 import abi from '../abi.json';
 import { ShowToast } from './utils/ShowToast';
-// import avatar from './../utils/GetAvatar';
+import {sdk} from './../utils/CirclesConfig'
+import { Address } from '@circles-sdk/utils';
 
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
@@ -46,7 +47,6 @@ export function UrlForms() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        // console.log(avatar.avatarInfo);
 
         if (!validateInputUrl()) return;
         if (CRCVersion && !/^\/.*/.test(shortUrl)){
@@ -65,6 +65,12 @@ export function UrlForms() {
             await window.ethereum.request({ method: 'eth_requestAccounts' });
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
+
+            const userAddress = await signer.getAddress();
+            const avatar = await sdk.getAvatar(userAddress as Address);
+            console.log('avatar info: ' + avatar.avatarInfo);
+
+
             const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
 
             const tx = await contract.generateShortUrl(originalUrl);
