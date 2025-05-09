@@ -4,7 +4,6 @@
 }
 
 * {
-    // font-family: "PT Sans", sans-serif;
     font-family: "Azeret Mono", monospace;
 }
 
@@ -31,11 +30,43 @@ body {
     height: 100%;
     margin: 0;
     padding: 0;
-    // background-color: $bg-color;
+    background-color: $bg-color;
     overflow-y: auto;
     overflow-x: hidden;
     line-height: 1;
     cursor: none;
+
+    &::before,
+    &::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.4;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    &::before {
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, #9b5de5, transparent);
+        top: -150px;
+        left: -150px;
+    }
+
+    &::after {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, #00ffe0, transparent);
+        bottom: -100px;
+        right: -100px;
+    }
+
+    .container {
+        position: relative;
+        z-index: 1;
+    }
 }
 
 #root {
@@ -49,6 +80,52 @@ main {
     margin-top: 120px; // match navbar
 }
 
+.table {
+    table-layout: auto;
+    background-color: transparent !important;
+
+    th,
+    td {
+        background-color: transparent !important;
+        color: #f8f9fa;
+
+        &:first-of-type {
+            white-space: nowrap;
+            width: 1%;
+            padding-right: 25px;
+        }
+
+    }
+
+    td {
+        a {
+            font-size: 14px;
+            transition: all 0.3s ease;
+
+            &:hover {
+                color: $secondary-color !important;
+            }
+        }
+
+        code {
+            font-size: 16px;
+        }
+    }
+
+    thead th {
+        border-bottom: 1px solid rgba(255, 255, 255, 1);
+    }
+
+    tbody tr {
+        transition: background-color 0.15s ease-in-out !important;
+
+        &:hover {
+            background-color: rgba(128, 0, 255, 0.06) !important;
+            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.03) !important;
+        }
+    }
+}
+
 .divider {
     &-horizontal {
         max-width: 1px;
@@ -57,6 +134,26 @@ main {
         border-radius: 10px;
         margin: 0 auto;
     }
+}
+
+.title {
+    color: $white;
+    font-size: 44px;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.75);
+    letter-spacing: 1px;
+}
+
+.subtitle-glow {
+    color: rgba(201, 95, 255, 0.5);
+    font-size: 22px;
+}
+
+.title-glow {
+    color: $primary-light;
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255, 160, 255, 0.5);
 }
 
 #custom-cursor {
@@ -92,37 +189,43 @@ main {
 }
 
 .qr-card {
-    transition: transform 0.2s ease-out;
-    backdrop-filter: blur(12px);
-    border-radius: 1.5rem;
-    box-shadow:
-        0 30px 60px rgba(128, 0, 255, 0.4),
-        0 0 20px rgba(0, 255, 255, 0.15),
-        inset 0 0 15px rgba(255, 255, 255, 0.03);
-    overflow: hidden;
     position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    backdrop-filter: blur(8px);
+    background: radial-gradient(circle at center, rgba(40, 0, 70, 0.3), #111);
+    box-shadow:
+        0 10px 20px rgba(128, 0, 255, 0.2),
+        0 0 12px rgba(0, 255, 255, 0.08),
+        inset 0 0 10px rgba(255, 255, 255, 0.02);
+    transition: transform 0.15s ease, box-shadow 0.3s ease;
+}
 
-    .glare {
-        pointer-events: none;
-        z-index: 0;
-        transition: background 0.1s ease-out;
+.qr-card .glare {
+    pointer-events: none;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: background 0.15s ease-out;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05), transparent 60%);
+    mix-blend-mode: screen;
+}
 
-        &::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-            animation: shimmer 4s infinite linear;
-        }
+.modal-body {
+    canvas {
+        border-radius: $corner-radius;
     }
 }
 
-@keyframes shimmer {
-    0% {
-        transform: translateX(-100%);
-    }
-
-    100% {
-        transform: translateX(100%);
-    }
+.glass-card {
+    color: $white;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: $corner-radius;
+    backdrop-filter: blur(10px);
+    box-shadow: $box-shadow-soft;
+    padding: 30px;
 }
