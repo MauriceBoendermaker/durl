@@ -8,10 +8,9 @@ export const Footer = () => {
                     <div className="col-auto footer-bottom-row text-center">
                         <p>&copy; {new Date().getFullYear()} - Made with ❤️ by&nbsp;
                             <a className="btn-link" target="_blank" href="https://github.com/MauriceBoendermaker">Maurice</a>,&nbsp;
-                            <a className="btn-link" target="_blank" href="https://github.com/yassyass2">Yassine</a>,&nbsp;
-                            <a className="btn-link" target="_blank" href="https://github.com/">Adel</a>
+                            <a className="btn-link" target="_blank" href="https://github.com/yassyass2">Yassine</a>
                             &nbsp;and&nbsp;
-                            <a className="btn-link" target="_blank" href="https://github.com/">Mathijs</a>
+                            <a className="btn-link" target="_blank" href="https://github.com/">Adel</a>
                         </p>
                     </div>
                 </div>
