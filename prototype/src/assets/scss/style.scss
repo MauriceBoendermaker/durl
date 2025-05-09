@@ -3,9 +3,12 @@
 @import 'variables';
 @import 'default';
 
-// Component specific stylesheets
 @import 'misc/footer';
 @import 'misc/buttons';
 
+// Component specific stylesheets
+@import 'components/nav/nav';
+@import 'components/shorten-page';
+@import 'components/dashboard';
 
 // Page specific stylesheets
