@@ -1,0 +1,40 @@
+body,
+span,
+a,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    line-height: normal;
+}
+
+a,
+button,
+input {
+    cursor: none !important;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    // background-color: $bg-color;
+    overflow-y: auto;
+    overflow-x: hidden;
+    line-height: 1;
+    cursor: none;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+main {
+    min-height: calc(100vh - 202px);
+    margin-top: 120px; // match navbar
+}
