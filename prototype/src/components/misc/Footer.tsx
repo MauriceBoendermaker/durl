@@ -10,7 +10,7 @@ export const Footer = () => {
                             <a className="btn-link" target="_blank" href="https://github.com/MauriceBoendermaker">Maurice</a>,&nbsp;
                             <a className="btn-link" target="_blank" href="https://github.com/yassyass2">Yassine</a>
                             &nbsp;and&nbsp;
-                            <a className="btn-link" target="_blank" href="https://github.com/">Adel</a>
+                            <a className="btn-link" target="_blank" href="https://github.com/">Adil</a>
                         </p>
                     </div>
                 </div>
