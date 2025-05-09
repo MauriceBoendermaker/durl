@@ -5,6 +5,8 @@ import Nav from './components/misc/Nav';
 import { Footer } from './components/misc/Footer';
 import ShortenPage from './components/ShortenPage';
 import Dashboard from './components/Dashboard';
+import RedirectPage from './components/utils/RedirectPage';
+
 import "./assets/scss/style.scss";
 
 function App() {
@@ -16,6 +18,7 @@ function App() {
         <Route path="/" element={<ShortenPage />} />
         <Route path="/faq" element={<ShortenPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/:shortId" element={<RedirectPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
 
