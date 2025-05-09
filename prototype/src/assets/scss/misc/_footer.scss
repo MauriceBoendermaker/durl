@@ -1,0 +1,37 @@
+.footer-parent {
+    position: fixed;
+    bottom: 0;
+    background-color: $footer-color;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    border-top: 2px solid $primary-color;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+    z-index: 99;
+    margin-top: -82px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.50);
+
+    p {
+        color: $white;
+        font-size: 16px;
+        font-weight: 400;
+        letter-spacing: 1px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    .footer-bottom-row {
+        margin-left: 100px;
+        transition: margin 0.3s ease;
+
+        a {
+            color: $primary-light;
+
+            &:hover {
+                color: $secondary-color;
+            }
+        }
+    }
+}

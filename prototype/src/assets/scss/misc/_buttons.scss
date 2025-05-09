@@ -1,0 +1,119 @@
+button {
+    border: unset;
+}
+
+.btn {
+    border-radius: $corner-radius;
+}
+
+.button-group {
+    button {
+        display: inline-block;
+
+        &:not(:first-child) {
+            margin-left: 15px;
+        }
+    }
+}
+
+.button-group-modal-footer {
+    padding: 15px;
+
+    button {
+        display: inline-block;
+
+        &:not(:first-child) {
+            margin-left: 15px;
+        }
+    }
+}
+
+.btn-primary {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    justify-content: center;
+    color: #212121;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    background: linear-gradient(to right,
+            #64a8f2 0%,
+            #00ffe0 50%,
+            #64a8f2 100%);
+    background-size: 200% 100%;
+    background-position: 0% 0%;
+    border-radius: $corner-radius;
+    border: none;
+    box-shadow: $box-shadow;
+    padding: 12px 12px;
+    transition: all 0.25s ease-in-out;
+
+    &:hover {
+        background-position: 100% 0%;
+    }
+
+    i {
+        color: $white;
+        margin-left: 10px;
+    }
+
+    &-close {
+        background-color: $delete-red !important;
+        border: 1px solid red;
+        transition: background-color .15s ease-in-out;
+
+        &:hover {
+            background-color: $delete-red-hover !important;
+        }
+    }
+}
+
+.btn-simple {
+    color: $text-color-light;
+    font-size: 16px;
+    font-weight: 400;
+    transition: color .15s ease-in-out;
+
+    &:hover {
+        color: $secondary-color;
+    }
+}
+
+.prev-btn,
+.next-btn {
+    color: $primary-color;
+    font-size: 20px;
+    width: 50px;
+    height: 50px;
+    padding: auto;
+    border-radius: $corner-radius;
+    background-color: $white;
+    box-shadow: $box-shadow-soft;
+    transition: color .15s ease-in-out;
+
+    &:hover {
+        color: $secondary-color;
+    }
+}
+
+a.btn-link {
+    color: $secondary-color;
+    text-decoration: none;
+    transition: color .15s ease-in-out;
+
+    &:hover {
+        color: $primary-light;
+    }
+}
+
+.logout-btn {
+    color: $white !important;
+    font-weight: 600 !important;
+    margin-right: 25px;
+
+    &:hover {
+        color: $primary-light !important;
+    }
+}

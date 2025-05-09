@@ -1,0 +1,110 @@
+.homepage-hero {
+    background-color: #101023;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    color: $white;
+    display: flex;
+    align-items: center;
+
+    &::before,
+    &::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.4;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    &::before {
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, #9b5de5, transparent);
+        top: -150px;
+        left: -150px;
+    }
+
+    &::after {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, #00ffe0, transparent);
+        bottom: -100px;
+        right: -100px;
+    }
+
+    .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .title {
+        color: $white;
+        font-size: 44px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.75);
+        letter-spacing: 1px;
+    }
+
+    .subtitle-glow {
+        color: rgba(201, 95, 255, 0.5);
+        font-size: 22px;
+    }
+
+    .title-glow {
+        color: $primary-light;
+        font-size: 28px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(255, 160, 255, 0.5);
+    }
+
+    .glass-card {
+        color: $white;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: $corner-radius;
+        backdrop-filter: blur(10px);
+        box-shadow: $box-shadow-soft;
+        padding: 30px;
+    }
+
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: $white;
+        border-radius: $corner-radius;
+        padding: 12px 16px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: $primary-color;
+            box-shadow: 0 0 0 2px rgba(255, 160, 255, 0.25);
+        }
+
+        &:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: $primary-light;
+            box-shadow: 0 0 0 2px rgba(255, 160, 255, 0.75) !important;
+        }
+
+        &::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+    }
+
+    .button-group {
+        display: flex;
+        gap: 16px;
+
+        button:first-of-type {
+            flex-grow: 1;
+        }
+
+        button:last-of-type {
+            white-space: nowrap;
+        }
+    }
+}
