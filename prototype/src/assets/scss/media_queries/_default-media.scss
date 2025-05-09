@@ -26,6 +26,14 @@
     .title-glow {
         font-size: 24px;
     }
+
+    .glass-card {
+        padding: 25px;
+    }
+
+    canvas {
+        opacity: 0.3;
+    }
 }
 
 @media (max-width: 767.98px) {}
