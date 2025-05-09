@@ -20,4 +20,4 @@ export const circlesConfig: CirclesConfig = {
 const adapter = new BrowserProviderContractRunner();
 await adapter.init();
 
-const sdk = new Sdk (adapter,circlesConfig);
+export const sdk = new Sdk (adapter,circlesConfig);
