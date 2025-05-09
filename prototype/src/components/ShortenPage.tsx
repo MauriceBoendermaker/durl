@@ -1,9 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { ethers } from 'ethers';
-import abi from '../abi.json';
 import MouseDots from './misc/MouseDots';
 import { QRCodeCanvas } from 'qrcode.react';
-import { ShowToast } from './utils/ShowToast';
 import { UrlForms } from './UrlForms';
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
@@ -16,7 +13,6 @@ declare global {
 }
 
 function ShortenPage() {
-    const [originalUrl, setOriginalUrl] = useState('');
     const [status, setStatus] = useState('');
     const [txHash, setTxHash] = useState('');
     const [generatedShortId, setGeneratedShortId] = useState('');
@@ -24,7 +20,6 @@ function ShortenPage() {
     const [qrUrl, setQrUrl] = useState('');
     const [modalMouse, setModalMouse] = useState({ x: 0, y: 0 });
     const cardRef = useRef<HTMLDivElement | null>(null);
-    const [urlInvalid, setUrlInvalid] = useState(false);
 
     function downloadQR() {
         const canvas = qrRef.current;
@@ -34,32 +29,6 @@ function ShortenPage() {
         a.href = url;
         a.download = `${generatedShortId}.png`;
         a.click();
-    }
-
-    function isValidUrl(string: string) {
-        let url;
-        
-        try {
-          url = new URL(string);
-        } catch (_) {
-          return false;  
-        }
-      
-        return true; //url.protocol === "http:" || url.protocol === "https:";
-      }
-
-    function validateInputUrl()
-    {
-        let validUrl = isValidUrl(originalUrl);
-
-        if (!validUrl) {
-            setUrlInvalid(true);
-   
-            ShowToast('Please enter a valid URL, including the protocol (e.g., https://example.com).', 'danger');
-            return false;
-        }
-
-        return true;
     }
 
     useEffect(() => {

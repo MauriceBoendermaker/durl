@@ -1,10 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { ethers } from 'ethers';
 import abi from '../abi.json';
-import MouseDots from './misc/MouseDots';
-import { QRCodeCanvas } from 'qrcode.react';
 import { ShowToast } from './utils/ShowToast';
-import handleQRModal from './ShortenPage'
+
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
@@ -15,7 +13,6 @@ export function UrlForms() {
     const [txHash, setTxHash] = useState('');
     const [generatedShortId, setGeneratedShortId] = useState('');
     const qrRef = useRef<HTMLCanvasElement | null>(null);
-    const [qrUrl, setQrUrl] = useState('');
     const cardRef = useRef<HTMLDivElement | null>(null);
     const [urlInvalid, setUrlInvalid] = useState(false);
 
