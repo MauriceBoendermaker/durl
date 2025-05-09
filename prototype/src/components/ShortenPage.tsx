@@ -27,6 +27,9 @@ function ShortenPage() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
+
+        if (!validateInputUrl()) return;
+
         if (!window.ethereum) {
             alert('MetaMask not detected');
             return;
@@ -58,12 +61,14 @@ function ShortenPage() {
             const shortId = parsedLog?.args?.shortId;
             setGeneratedShortId(shortId);
             setStatus('Confirmed in block ' + receipt.blockNumber);
-        } catch (err) {
-            if (err instanceof Error) {
-                setStatus('Error: ' + err.message);
-            } else {
-                setStatus('An unknown error occurred.');
+        } catch (err: any) {
+
+            if (err.code === 4001) {
+                setStatus('Transaction was cancelled by the user.');
             }
+            
+            setStatus('Error: ' + err.message);
+
         }
     }
 
@@ -77,14 +82,36 @@ function ShortenPage() {
         a.click();
     }
 
-    function handleQRModal() {
-        if (!originalUrl.trim()) {
+    function isValidUrl(string: string) {
+        let url;
+        
+        try {
+          url = new URL(string);
+        } catch (_) {
+          return false;  
+        }
+      
+        return true; //url.protocol === "http:" || url.protocol === "https:";
+      }
+
+    function validateInputUrl()
+    {
+        let validUrl = isValidUrl(originalUrl);
+
+        if (!validUrl) {
             setUrlInvalid(true);
-            ShowToast('Please enter a valid URL before generating a QR code.', 'danger');
-            return;
+   
+            ShowToast('Please enter a valid URL, including the protocol (e.g., https://example.com).', 'danger');
+            return false;
         }
 
-        setUrlInvalid(false);
+        return true;
+    }
+
+    function handleQRModal() {
+        
+        if (!validateInputUrl()) return;
+
         const fullUrl = `${PROJECT_URL}/#/${generatedShortId || 'preview'}`;
         setQrUrl(fullUrl);
         const modal = new (window as any).bootstrap.Modal(document.getElementById('qrModal'));
@@ -159,18 +186,18 @@ function ShortenPage() {
                                         value={originalUrl}
                                         onChange={(e) => {
                                             setOriginalUrl(e.target.value);
-                                            if (urlInvalid) setUrlInvalid(false);
+                                            setUrlInvalid(false);
                                         }}
-                                        placeholder="Original URL (e.g. https://mauriceb.nl)"
+                                        placeholder="Original URL (e.g. https://aboutcircles.com/)"
                                         className={`form-control ${urlInvalid ? 'is-invalid' : ''}`}
-                                        required
+                                        
                                     />
                                 </div>
                                 <div className="button-group mt-3">
                                     <button type="submit" className="btn btn-primary">Submit to Blockchain</button>
-                                    <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
+                                    {/* <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
                                         Generate QR Code
-                                    </button>
+                                    </button> */}
                                 </div>
                             </form>
                             <div className="status mt-3">
