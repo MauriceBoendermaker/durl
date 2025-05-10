@@ -13,6 +13,10 @@
         }
     }
 
+    small {
+        font-size: 12px;
+    }
+
     .title {
         font-size: 32px;
         letter-spacing: 0px;
@@ -28,11 +32,37 @@
     }
 
     .glass-card {
-        padding: 25px;
+        padding: 10px;
     }
 
     canvas {
         opacity: 0.3;
+    }
+
+    .table td a,
+    .table td {
+        font-size: 12px !important;
+    }
+
+    .table th,
+    .table td {
+        font-size: 14px !important;
+        padding: 5px;
+    }
+
+    .table td code {
+        font-size: 14px !important;
+    }
+
+    .table th:first-of-type,
+    .table td:first-of-type {
+        padding-right: 10px;
+    }
+
+    .btn-primary {
+        font-size: 13px;
+        letter-spacing: 1px;
+        padding: 12px;
     }
 }
 
