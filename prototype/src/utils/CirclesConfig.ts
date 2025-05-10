@@ -20,4 +20,4 @@ export const GnosisChainConfig: CirclesConfig = {
 const adapter = new BrowserProviderContractRunner();
 await adapter.init();
 
-export const sdk = new Sdk (adapter,GnosisChainConfig);
+export const sdk = new Sdk (adapter, GnosisChainConfig);

@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import abi from '../abi_xDAI.json';
 import { ShowToast } from './utils/ShowToast';
 import { switchToGnosis } from 'utils/NetworkSwitcher';
+import { sdk } from 'utils/CirclesConfig';
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
@@ -107,6 +108,8 @@ export function UrlForms() {
                 setGeneratedShortId(shortId);
                 setTxHash(receipt.hash);
                 setStatus('Confirmed in block ' + receipt.blockNumber);
+
+
             } else {
                 setStatus('Switching to Gnosis...');
                 await switchToGnosis();
