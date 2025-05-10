@@ -1,0 +1,58 @@
+.form-control {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: $white;
+    border-radius: $corner-radius;
+    border-top-left-radius: 0px;
+    padding: 12px 16px;
+    font-size: 14px;
+    transition: $transition;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: $primary-color;
+        box-shadow: 0 0 0 2px rgba(255, 160, 255, 0.25);
+    }
+
+    &:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: $primary-light;
+        box-shadow: 0 0 0 2px rgba(255, 160, 255, 0.75) !important;
+    }
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.2);
+    }
+}
+
+.nav-tabs {
+    width: max-content;
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    border-bottom: none;
+    border-top-left-radius: $corner-radius;
+    border-top-right-radius: $corner-radius;
+    overflow: hidden;
+
+    .nav-item {
+        button {
+            color: $primary-25;
+            border-radius: 0;
+            border: none;
+            transition: $transition;
+
+            &:hover {
+                color: $primary-color;
+            }
+
+            &.active {
+                color: $primary-light;
+                margin-bottom: 0px;
+                border: none;
+            }
+
+            &:not(.active) {
+                border-bottom: unset;
+            }
+        }
+    }
+}
