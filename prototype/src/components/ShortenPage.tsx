@@ -92,7 +92,7 @@ function ShortenPage() {
                     <div className="row justify-content-center mt-5">
                         <div className="col-md-8 glass-card">
                             <h1 className="title-glow pb-4">Shorten a long link</h1>
-                            <UrlForms/>
+                            <UrlForms />
                             <div className="status mt-3">
                                 {status && <p>{status}</p>}
                                 {txHash && (
