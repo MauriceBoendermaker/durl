@@ -8,7 +8,7 @@ import { CRCPaymentProvider } from 'contractMethods/CRCPaymentProvider';
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
 
-const CRC_PAYMENT_RECEIVER = '0x266C002fd57F76138dAAf2c107202377e4C3B5A7';
+var CRC_PAYMENT_RECEIVER = '0x266C002fd57F76138dAAf2c107202377e4C3B5A7';
 
 const CRC_PAYMENT_AMOUNT = '5';
 
@@ -61,6 +61,9 @@ export function UrlForms() {
             await switchToGnosis();
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
+            if (await signer.getAddress() == CRC_PAYMENT_RECEIVER){
+                CRC_PAYMENT_RECEIVER = '0x4335b31e5747ad4678348589e44513ce39ea0466';
+            }
             const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
 
             if (CRCVersion) {
