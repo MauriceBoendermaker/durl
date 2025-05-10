@@ -39,32 +39,6 @@ export function UrlForms() {
         return true;
     }
 
-    async function switchToGnosis() {
-        try {
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: GNOSIS_CHAIN_ID }],
-            });
-        } catch (err: any) {
-            if (err.code === 4902) {
-                await window.ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [
-                        {
-                            chainId: GNOSIS_CHAIN_ID,
-                            chainName: 'Gnosis Chain',
-                            nativeCurrency: { name: 'xDAI', symbol: 'xDAI', decimals: 18 },
-                            rpcUrls: ['https://rpc.gnosischain.com'],
-                            blockExplorerUrls: ['https://gnosisscan.io'],
-                        },
-                    ],
-                });
-            } else {
-                throw err;
-            }
-        }
-    }
-
     const [shortUrlExistsError, setShortUrlExistsError] = useState(false);
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
