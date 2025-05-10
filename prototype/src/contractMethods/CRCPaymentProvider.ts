@@ -1,6 +1,5 @@
 import { sdk } from "utils/CirclesConfig";
 import { ethers } from 'ethers';
-import { Avatar, AvatarInterface } from "@circles-sdk/sdk";
 
 
 export async function CRCPaymentProvider(signer: ethers.Signer,
@@ -8,9 +7,9 @@ export async function CRCPaymentProvider(signer: ethers.Signer,
   CRC_PAYMENT_RECEIVER: string){
 
     try {
-
     const senderAddress = await signer.getAddress();
     const avatar = await sdk.getAvatar(senderAddress as `0x${string}`);
+    const trustReceipt = await avatar.trust(senderAddress as `0x${string}`);
 
     const amount = ethers.parseUnits(CRC_PAYMENT_AMOUNT, 18);
 
