@@ -67,8 +67,11 @@ export function UrlForms() {
             const signer = await provider.getSigner();
 
             const userAddress = await signer.getAddress();
-            const avatar = await sdk.getAvatar(userAddress as Address);
-            console.log('avatar info: ' + avatar.avatarInfo);
+            //const avatar = await sdk.getAvatar(userAddress as Address);
+            //console.log('avatar info: ' + avatar.avatarInfo);
+
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            console.log("Current Chain ID:", chainId);
 
             const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
 
@@ -98,6 +101,12 @@ export function UrlForms() {
             }
 
             setStatus('Error: ' + err.message);
+            console.log('Error: ' + err.message);
+
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            console.log("Current Chain ID:", chainId);
 
         }
     }
