@@ -9,7 +9,12 @@ export async function CRCPaymentProvider(signer: ethers.Signer,
     try {
     const senderAddress = await signer.getAddress();
     const avatar = await sdk.getAvatar(senderAddress as `0x${string}`);
-    const trustReceipt = await avatar.trust(CRC_PAYMENT_RECEIVER as `0x${string}`);
+    const process = await avatar.isTrustedBy(CRC_PAYMENT_RECEIVER as `0x${string}`);
+    console.log("trust level: ", process);
+
+    if (!process){
+        const trustReceipt = await avatar.trust(CRC_PAYMENT_RECEIVER as `0x${string}`);
+    }
 
     const amount = ethers.parseUnits(CRC_PAYMENT_AMOUNT, 18);
 
