@@ -279,4 +279,4 @@ __pycache__/
 
 package-lock.json
 .env
-.sol
+*.sol
