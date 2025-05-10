@@ -1,124 +1,142 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { ethers } from 'ethers';
 import abi from '../abi.json';
 import { ShowToast } from './utils/ShowToast';
-import { sdk } from './../utils/CirclesConfig'
-import { Address } from '@circles-sdk/utils';
-import { switchToGnosis, switchToSepolia } from 'utils/NetworkSwitcher';
-
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
+const INFURIA_URL = process.env.REACT_APP_INFURA_URL as string;
+const SEPOLIA_CHAIN_ID = '0xaa36a7';
+
+const CRC_TOKEN_ADDRESS = '0xc15cbda9e25f98043facac170d74b569971293b2';
+const CRC_PAYMENT_RECEIVER = '0x266c002fd57f76138daaf2c107202377e4c3b5a7';
+const CRC_PAYMENT_AMOUNT = '5';
 
 export function UrlForms() {
     const [originalUrl, setOriginalUrl] = useState('');
     const [status, setStatus] = useState('');
     const [txHash, setTxHash] = useState('');
     const [generatedShortId, setGeneratedShortId] = useState('');
-    const qrRef = useRef<HTMLCanvasElement | null>(null);
-    const cardRef = useRef<HTMLDivElement | null>(null);
     const [urlInvalid, setUrlInvalid] = useState(false);
     const [CRCVersion, setCRCVersion] = useState(true);
     const [shortUrl, setShortUrl] = useState('');
 
     function isValidUrl(string: string) {
-        let url;
-
         try {
-            url = new URL(string);
-        } catch (_) {
+            new URL(string);
+            return true;
+        } catch {
             return false;
         }
-
-        return true; //url.protocol === "http:" || url.protocol === "https:";
     }
 
     function validateInputUrl() {
-        let validUrl = isValidUrl(originalUrl);
-
-        if (!validUrl) {
+        if (!isValidUrl(originalUrl)) {
             setUrlInvalid(true);
-
-            ShowToast('Please enter a valid URL, including the protocol (e.g., https://example.com).', 'danger');
+            ShowToast('Please enter a valid URL (https://...)', 'danger');
             return false;
         }
-
         return true;
+    }
+
+    async function switchToSepolia() {
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: SEPOLIA_CHAIN_ID }],
+            });
+        } catch (err: any) {
+            if (err.code === 4902) {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [
+                        {
+                            chainId: SEPOLIA_CHAIN_ID,
+                            chainName: 'Sepolia Testnet',
+                            nativeCurrency: { name: 'Sepolia ETH', symbol: 'ETH', decimals: 18 },
+                            rpcUrls: ['https://sepolia.infura.io/v3/', { INFURIA_URL }],
+                            blockExplorerUrls: ['https://sepolia.etherscan.io'],
+                        },
+                    ],
+                });
+            } else {
+                throw err;
+            }
+        }
     }
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-
         if (!validateInputUrl()) return;
         if (CRCVersion && !/^\/.*/.test(shortUrl)) {
             setUrlInvalid(true);
-            ShowToast('Please enter a valid short URL, starting with /, e.g. /custom', 'danger');
+            ShowToast('Short URL must start with `/` (e.g., /custom)', 'danger');
             return;
         }
 
         if (!window.ethereum) {
-            alert('MetaMask not detected');
+            ShowToast('MetaMask not detected', 'danger');
             return;
         }
 
         try {
-            setStatus('');
-            if (CRCVersion){
-                switchToGnosis();
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const provider = new ethers.BrowserProvider(window.ethereum);
-                const signer = await provider.getSigner();
+            setStatus('Requesting wallet access...');
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
 
-                const userAddress = await signer.getAddress();
-                const avatar = await sdk.getAvatar(userAddress as Address);
-                console.log('avatar info: ' + avatar.avatarInfo);
-            }
-            else{
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const provider = new ethers.BrowserProvider(window.ethereum);
-                const signer = await provider.getSigner();
+            if (CRCVersion) {
+                setStatus('Paying with CRC...');
 
-                const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
-                const tx = await contract.generateShortUrl(originalUrl);
-                setStatus('Transaction sent, waiting for confirmation...');
-                const receipt = await tx.wait();
-                setTxHash(receipt.hash);
+                const erc20Abi = [
+                    'function transfer(address to, uint256 amount) public returns (bool)',
+                    'function decimals() public view returns (uint8)',
+                ];
+                const token = new ethers.Contract(CRC_TOKEN_ADDRESS, erc20Abi, signer);
+                const decimals = await token.decimals();
+                const amount = ethers.parseUnits(CRC_PAYMENT_AMOUNT, decimals);
 
-                const iface = new ethers.Interface(abi);
-                const parsedLog = receipt.logs
-                    .map((log: { topics: ReadonlyArray<string>; data: string }) => {
-                        try {
-                            return iface.parseLog(log);
-                        } catch {
-                            return null;
-                        }
-                    })
-                    .find((log: any) => log?.name === 'ShortUrlCreated');
+                const transferTx = await token.transfer(CRC_PAYMENT_RECEIVER, amount);
+                await transferTx.wait();
 
-                const shortId = parsedLog?.args?.shortId;
-                setGeneratedShortId(shortId);
-                setStatus('Confirmed in block ' + receipt.blockNumber);
+                ShowToast(`Paid ${CRC_PAYMENT_AMOUNT} CRC successfully.`, 'success');
             }
 
-            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-            console.log("Current Chain ID:", chainId);
+            setStatus('Switching to Sepolia...');
+            await switchToSepolia();
 
+            setStatus('Sending URL to blockchain...');
+            const sepoliaProvider = new ethers.BrowserProvider(window.ethereum);
+            const sepoliaSigner = await sepoliaProvider.getSigner();
+            const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, sepoliaSigner);
+
+            const tx = await contract.generateShortUrl(originalUrl);
+            const receipt = await tx.wait();
+
+            const iface = new ethers.Interface(abi);
+            const parsedLog = receipt.logs
+                .map((log: { topics: string[]; data: string }) => {
+                    try {
+                        return iface.parseLog(log);
+                    } catch {
+                        return null;
+                    }
+                })
+                .find((log: any) => log?.name === 'ShortUrlCreated');
+
+            const shortId = parsedLog?.args?.shortId;
+            setGeneratedShortId(shortId);
+            setTxHash(receipt.hash);
+            setStatus('Confirmed in block ' + receipt.blockNumber);
         } catch (err: any) {
-
             if (err.code === 4001) {
                 setStatus('Transaction was cancelled by the user.');
+            } else {
+                setStatus('Error: ' + (err.message || 'Unknown error'));
             }
-
-            setStatus('Error: ' + err.message);
-            console.log('Error: ' + err.message);
-
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-            console.log("Current Chain ID:", chainId);
-
         }
     }
+
     return (
         <div>
             <ul className="nav nav-tabs">
@@ -127,7 +145,7 @@ export function UrlForms() {
                         className={`nav-link ${CRCVersion ? 'active' : ''}`}
                         onClick={() => setCRCVersion(true)}
                     >
-                        custom CRC link
+                        Custom CRC Link
                     </button>
                 </li>
                 <li className="nav-item">
@@ -135,48 +153,25 @@ export function UrlForms() {
                         className={`nav-link ${!CRCVersion ? 'active' : ''}`}
                         onClick={() => setCRCVersion(false)}
                     >
-                        Random link
+                        Random Link
                     </button>
                 </li>
             </ul>
 
-            {!CRCVersion && (
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <input
-                            type="text"
-                            value={originalUrl}
-                            onChange={(e) => {
-                                setOriginalUrl(e.target.value);
-                                setUrlInvalid(false);
-                            }}
-                            placeholder="Original URL (e.g. https://aboutcircles.com/)"
-                            className={`form-control ${urlInvalid ? 'is-invalid' : ''}`}
+            <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                    <input
+                        type="text"
+                        value={originalUrl}
+                        onChange={(e) => {
+                            setOriginalUrl(e.target.value);
+                            setUrlInvalid(false);
+                        }}
+                        placeholder="Original URL (e.g. https://aboutcircles.com/)"
+                        className={`form-control ${urlInvalid ? 'is-invalid' : ''}`}
+                    />
 
-                        />
-                    </div>
-                    <div className="button-group mt-3">
-                        <button type="submit" className="btn btn-primary">Submit to Blockchain</button>
-                        {/* <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
-                                        Generate QR Code
-                                    </button> */}
-                    </div>
-                </form>)}
-
-            {CRCVersion && (
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <input
-                            type="text"
-                            value={originalUrl}
-                            onChange={(e) => {
-                                setOriginalUrl(e.target.value);
-                                setUrlInvalid(false);
-                            }}
-                            placeholder="Original URL (e.g. https://aboutcircles.com/)"
-                            className={`form-control ${urlInvalid ? 'is-invalid' : ''}`}
-                        />
-
+                    {CRCVersion && (
                         <input
                             type="text"
                             value={shortUrl}
@@ -184,18 +179,31 @@ export function UrlForms() {
                                 setShortUrl(e.target.value);
                                 setUrlInvalid(false);
                             }}
-                            placeholder="Short Url (e.g. /customUrl)"
-                            className={`form-control ${/^\/.*/.test(shortUrl) ? 'is-invalid' : ''}`}
+                            placeholder="Short URL (e.g. /customLink)"
+                            className={`form-control mt-2 ${!/^\/.*/.test(shortUrl) ? 'is-invalid' : ''}`}
                         />
-                    </div>
-                    <div className="button-group mt-3">
-                        <button type="submit" className="btn btn-primary">Submit to Blockchain</button>
-                        {/* <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
-                                        Generate QR Code
-                                    </button> */}
-                    </div>
-                </form>)}
+                    )}
+                </div>
+                <div className="button-group mt-3">
+                    <button type="submit" className="btn btn-primary w-100">
+                        Submit to Blockchain
+                    </button>
+                </div>
+            </form>
 
+            {status && <div className="alert alert-info mt-3">{status}</div>}
+            {txHash && (
+                <div className="mt-2">
+                    <a
+                        href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-light"
+                    >
+                        View on Etherscan
+                    </a>
+                </div>
+            )}
         </div>
-    )
+    );
 }
