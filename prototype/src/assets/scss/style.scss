@@ -3,8 +3,10 @@
 @import 'variables';
 @import 'default';
 
+@import 'misc/cursor';
 @import 'misc/footer';
 @import 'misc/buttons';
+@import 'misc/form-control';
 
 // Component specific stylesheets
 @import 'components/nav/nav';
@@ -12,3 +14,11 @@
 @import 'components/dashboard';
 
 // Page specific stylesheets
+
+
+// Media queries
+@import 'media_queries/default-media';
+@import 'media_queries/nav';
+@import 'media_queries/footer';
+@import 'media_queries/shorten-page';
+@import 'media_queries/form-control';

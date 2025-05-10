@@ -7,8 +7,19 @@ button {
 }
 
 .button-group {
+    display: flex;
+    gap: 16px;
+
     button {
         display: inline-block;
+
+        &:first-of-type {
+            flex-grow: 1;
+        }
+
+        &:last-of-type {
+            white-space: nowrap;
+        }
 
         &:not(:first-child) {
             margin-left: 15px;
@@ -58,39 +69,12 @@ button {
         color: $white;
         margin-left: 10px;
     }
-
-    &-close {
-        background-color: $delete-red !important;
-        border: 1px solid red;
-        transition: background-color .15s ease-in-out;
-
-        &:hover {
-            background-color: $delete-red-hover !important;
-        }
-    }
 }
 
 .btn-simple {
     color: $text-color-light;
     font-size: 16px;
     font-weight: 400;
-    transition: color .15s ease-in-out;
-
-    &:hover {
-        color: $secondary-color;
-    }
-}
-
-.prev-btn,
-.next-btn {
-    color: $primary-color;
-    font-size: 20px;
-    width: 50px;
-    height: 50px;
-    padding: auto;
-    border-radius: $corner-radius;
-    background-color: $white;
-    box-shadow: $box-shadow-soft;
     transition: color .15s ease-in-out;
 
     &:hover {
@@ -105,15 +89,5 @@ a.btn-link {
 
     &:hover {
         color: $primary-light;
-    }
-}
-
-.logout-btn {
-    color: $white !important;
-    font-weight: 600 !important;
-    margin-right: 25px;
-
-    &:hover {
-        color: $primary-light !important;
     }
 }
