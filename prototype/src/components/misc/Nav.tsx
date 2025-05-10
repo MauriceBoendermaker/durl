@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { NavLink, Link } from 'react-router-dom';
 import { ShowToast } from '../utils/ShowToast';
 
 export default function Nav() {
@@ -51,17 +51,30 @@ export default function Nav() {
                                     </button>
                                     <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
                                         <ul className="navbar-nav align-items-center">
-                                            <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
-                                            <li className="nav-item"><Link className="nav-link" to="/faq">FAQ</Link></li>
+                                            <li className="nav-item">
+                                                <NavLink to="/" className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
+                                                    Home
+                                                </NavLink>
+                                            </li>
+                                            <li className="nav-item">
+                                                <NavLink to="/how-it-works" className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
+                                                    How it works
+                                                </NavLink>
+                                            </li>
+                                            <li className="nav-item">
+                                                <NavLink to="/about" className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
+                                                    About
+                                                </NavLink>
+                                            </li>
                                             <li className="nav-item">
                                                 {!isConnected ? (
                                                     <button className="btn btn-outline-light ms-3" onClick={connectWallet}>
                                                         Connect Wallet
                                                     </button>
                                                 ) : (
-                                                    <Link className="btn-link ms-2" to="/dashboard">
+                                                    <NavLink to="/dashboard" className={({ isActive }) => 'btn btn-outline-light ms-4' + (isActive ? ' active' : '')}>
                                                         Dashboard
-                                                    </Link>
+                                                    </NavLink>
                                                 )}
                                             </li>
                                         </ul>
@@ -72,22 +85,24 @@ export default function Nav() {
                     </div>
                 </nav>
             </div>
+
             {sidebarOpen && (
                 <>
                     <div className="mobile-sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
                     <div className="mobile-sidebar">
                         <div className="sidebar-content">
                             <button className="close-btn" onClick={() => setSidebarOpen(false)}>&times;</button>
-                            <Link className="nav-link" to="/" onClick={() => setSidebarOpen(false)}>Home</Link>
-                            <Link className="nav-link" to="/faq" onClick={() => setSidebarOpen(false)}>FAQ</Link>
+                            <NavLink to="/" className="nav-link" onClick={() => setSidebarOpen(false)}>Home</NavLink>
+                            <NavLink to="/how-it-works" className="nav-link" onClick={() => setSidebarOpen(false)}>How it works</NavLink>
+                            <NavLink to="/about" className="nav-link" onClick={() => setSidebarOpen(false)}>About</NavLink>
                             {!isConnected ? (
                                 <button className="btn btn-outline-light mt-3" onClick={() => { connectWallet(); setSidebarOpen(false); }}>
                                     Connect Wallet
                                 </button>
                             ) : (
-                                <Link className="btn-link" to="/dashboard" onClick={() => setSidebarOpen(false)}>
+                                <NavLink to="/dashboard" className="btn-link" onClick={() => setSidebarOpen(false)}>
                                     Dashboard
-                                </Link>
+                                </NavLink>
                             )}
                         </div>
                     </div>

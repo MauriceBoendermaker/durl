@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 function MouseDots() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const mouse = useRef({ x: 0, y: 0 });
-    const dots: { x: number; y: number; vx: number; vy: number }[] = [];
+    const dotsRef = useRef<{ x: number; y: number; vx: number; vy: number }[]>([]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -13,24 +13,32 @@ function MouseDots() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        for (let i = 0; i < 80; i++) {
-            dots.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: Math.random() * 0.5 - 0.25,
-                vy: Math.random() * 0.5 - 0.25,
-            });
-        }
+        const dots = Array.from({ length: 40 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: Math.random() * 0.4 - 0.2,
+            vy: Math.random() * 0.4 - 0.2,
+        }));
+        dotsRef.current = dots;
 
         const handleMouseMove = (e: MouseEvent) => {
             mouse.current.x = e.clientX;
             mouse.current.y = e.clientY;
         };
 
-        const animate = () => {
+        let lastRender = performance.now();
+
+        const animate = (time: number) => {
+            const delta = time - lastRender;
+            if (delta < 16) {
+                requestAnimationFrame(animate);
+                return;
+            }
+            lastRender = time;
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            dots.forEach((dot, i) => {
+            for (const dot of dotsRef.current) {
                 dot.x += dot.vx;
                 dot.y += dot.vy;
 
@@ -40,47 +48,46 @@ function MouseDots() {
                 ctx.beginPath();
                 ctx.arc(dot.x, dot.y, 2, 0, Math.PI * 2);
                 ctx.fillStyle = 'rgba(255, 160, 240, 0.8)';
-                ctx.shadowBlur = 8;
-                ctx.shadowColor = 'rgba(255, 160, 240, 0.8)';
                 ctx.fill();
-                ctx.shadowBlur = 0;
+            }
 
+            // Draw connections (less frequent, no shadows)
+            for (let i = 0; i < dots.length; i++) {
+                const a = dots[i];
                 for (let j = i + 1; j < dots.length; j++) {
-                    const dx = dot.x - dots[j].x;
-                    const dy = dot.y - dots[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 100) {
+                    const b = dots[j];
+                    const dx = a.x - b.x;
+                    const dy = a.y - b.y;
+                    const distSq = dx * dx + dy * dy;
+                    if (distSq < 6400) {
+                        const alpha = 1 - Math.sqrt(distSq) / 80;
                         ctx.beginPath();
-                        ctx.moveTo(dot.x, dot.y);
-                        ctx.lineTo(dots[j].x, dots[j].y);
-                        ctx.strokeStyle = `rgba(255, 160, 240, ${1 - dist / 100})`;
-                        ctx.shadowBlur = 6;
-                        ctx.shadowColor = 'rgba(255, 160, 240, 0.4)';
+                        ctx.moveTo(a.x, a.y);
+                        ctx.lineTo(b.x, b.y);
+                        ctx.strokeStyle = `rgba(255, 160, 240, ${alpha})`;
                         ctx.stroke();
-                        ctx.shadowBlur = 0;
                     }
                 }
 
-                const dx = dot.x - mouse.current.x;
-                const dy = dot.y - mouse.current.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 150) {
+                // Mouse line (only draw if close enough)
+                const dx = a.x - mouse.current.x;
+                const dy = a.y - mouse.current.y;
+                const distSq = dx * dx + dy * dy;
+                if (distSq < 22500) {
+                    const alpha = 1 - Math.sqrt(distSq) / 150;
                     ctx.beginPath();
-                    ctx.moveTo(dot.x, dot.y);
+                    ctx.moveTo(a.x, a.y);
                     ctx.lineTo(mouse.current.x, mouse.current.y);
-                    ctx.strokeStyle = `rgba(255, 255, 255, ${1 - dist / 150})`;
-                    ctx.shadowBlur = 6;
-                    ctx.shadowColor = 'rgba(255, 255, 255, 0.4)';
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
                     ctx.stroke();
-                    ctx.shadowBlur = 0;
                 }
-            });
+            }
 
             requestAnimationFrame(animate);
         };
 
         window.addEventListener('mousemove', handleMouseMove);
-        animate();
+        requestAnimationFrame(animate);
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
