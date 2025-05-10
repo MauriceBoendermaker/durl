@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { ethers } from 'ethers';
-import abi from '../abi.json';
+import abi from '../abi_xDAI.json';
 import { ShowToast } from './utils/ShowToast';
-import { switchToGnosis, switchToSepolia} from 'utils/NetworkSwitcher';
+import { switchToGnosis} from 'utils/NetworkSwitcher';
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
-const INFURIA_URL = process.env.REACT_APP_INFURA_URL as string;
-const SEPOLIA_CHAIN_ID = '0xaa36a7';
 
 const CRC_TOKEN_ADDRESS = '0xc15cbda9e25f98043facac170d74b569971293b2';
 const CRC_PAYMENT_RECEIVER = '0x266c002fd57f76138daaf2c107202377e4c3b5a7';
 const CRC_PAYMENT_AMOUNT = '5';
+const GNOSIS_CHAIN_ID = '0x64';
 
 export function UrlForms() {
     const [originalUrl, setOriginalUrl] = useState('');
@@ -40,9 +39,36 @@ export function UrlForms() {
         return true;
     }
 
+    async function switchToGnosis() {
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: GNOSIS_CHAIN_ID }],
+            });
+        } catch (err: any) {
+            if (err.code === 4902) {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [
+                        {
+                            chainId: GNOSIS_CHAIN_ID,
+                            chainName: 'Gnosis Chain',
+                            nativeCurrency: { name: 'xDAI', symbol: 'xDAI', decimals: 18 },
+                            rpcUrls: ['https://rpc.gnosischain.com'],
+                            blockExplorerUrls: ['https://gnosisscan.io'],
+                        },
+                    ],
+                });
+            } else {
+                throw err;
+            }
+        }
+    }
+
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         if (!validateInputUrl()) return;
+
         if (CRCVersion && !/^\/.*/.test(shortUrl)) {
             setUrlInvalid(true);
             ShowToast('Short URL must start with `/` (e.g., /custom)', 'danger');
@@ -66,7 +92,6 @@ export function UrlForms() {
                 const signer = await provider.getSigner();
                 const CirclesAddress = signer.getAddress();
                 setStatus('Paying with CRC...');
-
                 const erc20Abi = [
                     'function transfer(address to, uint256 amount) public returns (bool)',
                     'function decimals() public view returns (uint8)',
@@ -81,21 +106,27 @@ export function UrlForms() {
                 ShowToast(`Paid ${CRC_PAYMENT_AMOUNT} CRC successfully.`, 'success');
             }
 
-            setStatus('Switching to Sepolia...');
-            await switchToSepolia();
+            setStatus('Switching to Gnosis...');
+            await switchToGnosis();
 
             await window.ethereum.request({ method: 'eth_requestAccounts' });
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
 
             setStatus('Sending URL to blockchain...');
-            const sepoliaProvider = new ethers.BrowserProvider(window.ethereum);
-            const sepoliaSigner = await sepoliaProvider.getSigner();
-            const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, sepoliaSigner);
+            const gnosisProvider = new ethers.BrowserProvider(window.ethereum);
+            const gnosisSigner = await gnosisProvider.getSigner();
+            const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, gnosisSigner);
 
-            const tx = await contract.generateShortUrl(originalUrl);
+            let tx;
+            if (CRCVersion) {
+                const customId = shortUrl.slice(1); // strip leading "/"
+                tx = await contract.createCustomShortUrl(customId, originalUrl);
+            } else {
+                tx = await contract.generateShortUrl(originalUrl);
+            }
+
             const receipt = await tx.wait();
-
             const iface = new ethers.Interface(abi);
             const parsedLog = receipt.logs
                 .map((log: { topics: string[]; data: string }) => {
@@ -178,12 +209,12 @@ export function UrlForms() {
             {txHash && (
                 <div className="mt-2">
                     <a
-                        href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                        href={`https://gnosisscan.io/tx/${txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-light"
                     >
-                        View on Etherscan
+                        View on GnosisScan
                     </a>
                 </div>
             )}
