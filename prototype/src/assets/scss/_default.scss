@@ -156,38 +156,6 @@ main {
     text-shadow: 0 0 10px rgba(255, 160, 255, 0.5);
 }
 
-#custom-cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: $primary-light;
-    pointer-events: none;
-    z-index: 99999;
-    transform: translate(-50%, -50%);
-    transition: width 0.2s ease, height 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 0 12px 4px rgba(255, 160, 240, 0.3);
-    mix-blend-mode: lighten;
-}
-
-.cursor-hovering {
-    background-color: $primary-color !important;
-    width: 30px !important;
-    height: 30px !important;
-    box-shadow: 0 0 18px 8px rgba(228, 160, 255, 0.9);
-    mix-blend-mode: multiply !important;
-    opacity: 0.75;
-}
-
-.cursor-link {
-    background-color: $secondary-color !important;
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-    border-radius: 0 !important;
-    box-shadow: 0 0 18px 8px rgba(255, 160, 240, 0.4);
-}
-
 .qr-card {
     position: relative;
     overflow: hidden;
