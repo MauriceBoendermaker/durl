@@ -86,7 +86,7 @@ function ShortenPage() {
                     <div className="row justify-content-center">
                         <div className="col-lg-8 text-center">
                             <h1 className="title">Decentralized URL Shortener</h1>
-                            <p className="subtitle-glow mb-5">Trustless. On-chain. Powered by Ethereum.</p>
+                            <p className="subtitle-glow mb-5">Trustless. On-chain. Powered by Circles.</p>
                         </div>
                     </div>
                     <div className="row justify-content-center mt-5">

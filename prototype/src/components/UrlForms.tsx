@@ -9,6 +9,7 @@ const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
 
 const CRC_TOKEN_ADDRESS = '0xc15cbda9e25f98043facac170d74b569971293b2';
 const CRC_PAYMENT_RECEIVER = '0x4335B31E5747AD4678348589e44513Ce39ea0466';
+
 const CRC_PAYMENT_AMOUNT = '5';
 const GNOSIS_CHAIN_ID = '0x64';
 
@@ -37,32 +38,6 @@ export function UrlForms() {
             return false;
         }
         return true;
-    }
-
-    async function switchToGnosis() {
-        try {
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: GNOSIS_CHAIN_ID }],
-            });
-        } catch (err: any) {
-            if (err.code === 4902) {
-                await window.ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [
-                        {
-                            chainId: GNOSIS_CHAIN_ID,
-                            chainName: 'Gnosis Chain',
-                            nativeCurrency: { name: 'xDAI', symbol: 'xDAI', decimals: 18 },
-                            rpcUrls: ['https://rpc.gnosischain.com'],
-                            blockExplorerUrls: ['https://gnosisscan.io'],
-                        },
-                    ],
-                });
-            } else {
-                throw err;
-            }
-        }
     }
 
     const [shortUrlExistsError, setShortUrlExistsError] = useState(false);
@@ -157,6 +132,7 @@ export function UrlForms() {
                 setGeneratedShortId(shortId);
                 setTxHash(receipt.hash);
                 setStatus('Confirmed in block ' + receipt.blockNumber);
+
             }
         } catch (err: any) {
             if (err.code === 4001) {
@@ -231,6 +207,15 @@ export function UrlForms() {
             {status && <div className="alert alert-info mt-3">{status}</div>}
             {txHash && (
                 <div className="mt-2">
+                    <span>Your shortened URL: </span>
+                    <a
+                        href={`https://durl.dev/${generatedShortId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-light underline"
+                    >
+                        https://durl.dev/{generatedShortId} points to {originalUrl}
+                    </a>
                     <a
                         href={`https://gnosisscan.io/tx/${txHash}`}
                         target="_blank"
@@ -239,6 +224,7 @@ export function UrlForms() {
                     >
                         View on GnosisScan
                     </a>
+
                 </div>
             )}
         </div>
