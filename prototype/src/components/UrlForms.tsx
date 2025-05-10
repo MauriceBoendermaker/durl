@@ -131,6 +131,7 @@ export function UrlForms() {
                 setGeneratedShortId(shortId);
                 setTxHash(receipt.hash);
                 setStatus('Confirmed in block ' + receipt.blockNumber);
+
             }
         } catch (err: any) {
             if (err.code === 4001) {
@@ -205,6 +206,15 @@ export function UrlForms() {
             {status && <div className="alert alert-info mt-3">{status}</div>}
             {txHash && (
                 <div className="mt-2">
+                    <span>Your shortened URL: </span>
+                    <a
+                        href={`https://durl.dev/${generatedShortId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-light underline"
+                    >
+                        https://durl.dev/{generatedShortId} points to {originalUrl}
+                    </a>
                     <a
                         href={`https://gnosisscan.io/tx/${txHash}`}
                         target="_blank"
@@ -213,6 +223,7 @@ export function UrlForms() {
                     >
                         View on GnosisScan
                     </a>
+
                 </div>
             )}
         </div>
