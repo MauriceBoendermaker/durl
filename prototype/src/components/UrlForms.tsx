@@ -4,6 +4,7 @@ import abi from '../abi.json';
 import { ShowToast } from './utils/ShowToast';
 import { sdk } from './../utils/CirclesConfig'
 import { Address } from '@circles-sdk/utils';
+import { switchToGnosis, switchToSepolia } from 'utils/NetworkSwitcher';
 
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
@@ -62,38 +63,46 @@ export function UrlForms() {
 
         try {
             setStatus('');
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
+            if (CRCVersion){
+                switchToGnosis();
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const provider = new ethers.BrowserProvider(window.ethereum);
+                const signer = await provider.getSigner();
 
-            const userAddress = await signer.getAddress();
-            //const avatar = await sdk.getAvatar(userAddress as Address);
-            //console.log('avatar info: ' + avatar.avatarInfo);
+                const userAddress = await signer.getAddress();
+                const avatar = await sdk.getAvatar(userAddress as Address);
+                console.log('avatar info: ' + avatar.avatarInfo);
+            }
+            else{
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const provider = new ethers.BrowserProvider(window.ethereum);
+                const signer = await provider.getSigner();
+
+                const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
+                const tx = await contract.generateShortUrl(originalUrl);
+                setStatus('Transaction sent, waiting for confirmation...');
+                const receipt = await tx.wait();
+                setTxHash(receipt.hash);
+
+                const iface = new ethers.Interface(abi);
+                const parsedLog = receipt.logs
+                    .map((log: { topics: ReadonlyArray<string>; data: string }) => {
+                        try {
+                            return iface.parseLog(log);
+                        } catch {
+                            return null;
+                        }
+                    })
+                    .find((log: any) => log?.name === 'ShortUrlCreated');
+
+                const shortId = parsedLog?.args?.shortId;
+                setGeneratedShortId(shortId);
+                setStatus('Confirmed in block ' + receipt.blockNumber);
+            }
 
             const chainId = await window.ethereum.request({ method: 'eth_chainId' });
             console.log("Current Chain ID:", chainId);
 
-            const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
-
-            const tx = await contract.generateShortUrl(originalUrl);
-            setStatus('Transaction sent, waiting for confirmation...');
-            const receipt = await tx.wait();
-            setTxHash(receipt.hash);
-
-            const iface = new ethers.Interface(abi);
-            const parsedLog = receipt.logs
-                .map((log: { topics: ReadonlyArray<string>; data: string }) => {
-                    try {
-                        return iface.parseLog(log);
-                    } catch {
-                        return null;
-                    }
-                })
-                .find((log: any) => log?.name === 'ShortUrlCreated');
-
-            const shortId = parsedLog?.args?.shortId;
-            setGeneratedShortId(shortId);
-            setStatus('Confirmed in block ' + receipt.blockNumber);
         } catch (err: any) {
 
             if (err.code === 4001) {
