@@ -59,7 +59,7 @@ export default function Nav() {
                                                         Connect Wallet
                                                     </button>
                                                 ) : (
-                                                    <Link className="btn-link ms-4" to="/dashboard">
+                                                    <Link className="btn-link ms-2" to="/dashboard">
                                                         Dashboard
                                                     </Link>
                                                 )}
@@ -85,7 +85,7 @@ export default function Nav() {
                                     Connect Wallet
                                 </button>
                             ) : (
-                                <Link className="btn-link mt-3" to="/dashboard" onClick={() => setSidebarOpen(false)}>
+                                <Link className="btn-link" to="/dashboard" onClick={() => setSidebarOpen(false)}>
                                     Dashboard
                                 </Link>
                             )}
