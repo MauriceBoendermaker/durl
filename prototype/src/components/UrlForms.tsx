@@ -8,11 +8,9 @@ import { CRCPaymentProvider } from 'contractMethods/CRCPaymentProvider';
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
 
-const CRC_TOKEN_ADDRESS = '0xc15cbda9e25f98043facac170d74b569971293b2';
 const CRC_PAYMENT_RECEIVER = '0x266C002fd57F76138dAAf2c107202377e4C3B5A7';
 
 const CRC_PAYMENT_AMOUNT = '5';
-const GNOSIS_CHAIN_ID = '0x64';
 
 export function UrlForms() {
     const [originalUrl, setOriginalUrl] = useState('');
