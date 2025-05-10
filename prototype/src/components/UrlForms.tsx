@@ -59,6 +59,8 @@ export function UrlForms() {
         }
 
         try {
+            setStatus('Switching to Gnosis...');
+            await switchToGnosis();
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
@@ -71,9 +73,6 @@ export function UrlForms() {
                     setShortUrlExistsError(true);
                     return;
                 }
-
-                setStatus('Switching to Gnosis...');
-                await switchToGnosis();
 
                 setStatus('Requesting wallet access...');
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
