@@ -1,16 +1,34 @@
 [
     {
+        "anonymous": false,
         "inputs": [
             {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "shortId",
+                "type": "string"
+            },
+            {
+                "indexed": false,
                 "internalType": "string",
                 "name": "originalUrl",
                 "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "createdAt",
+                "type": "uint256"
             }
         ],
-        "name": "generateShortUrl",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "name": "ShortUrlCreated",
+        "type": "event"
     },
     {
         "inputs": [
@@ -26,6 +44,19 @@
             }
         ],
         "name": "createCustomShortUrl",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "originalUrl",
+                "type": "string"
+            }
+        ],
+        "name": "generateShortUrl",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -93,34 +124,70 @@
         "type": "function"
     },
     {
-        "anonymous": false,
         "inputs": [
             {
-                "indexed": true,
-                "internalType": "address",
-                "name": "user",
-                "type": "address"
-            },
-            {
-                "indexed": false,
                 "internalType": "string",
                 "name": "shortId",
                 "type": "string"
-            },
+            }
+        ],
+        "name": "shortIdExists",
+        "outputs": [
             {
-                "indexed": false,
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "name": "urlMapping",
+        "outputs": [
+            {
                 "internalType": "string",
                 "name": "originalUrl",
                 "type": "string"
             },
             {
-                "indexed": false,
                 "internalType": "uint256",
                 "name": "createdAt",
                 "type": "uint256"
             }
         ],
-        "name": "ShortUrlCreated",
-        "type": "event"
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "userLinks",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
     }
 ]
