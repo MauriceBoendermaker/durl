@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { ethers } from 'ethers';
 import abi from '../abi.json';
 import { ShowToast } from './utils/ShowToast';
-import {sdk} from './../utils/CirclesConfig'
+import { sdk } from './../utils/CirclesConfig'
 import { Address } from '@circles-sdk/utils';
 
 
@@ -49,7 +49,7 @@ export function UrlForms() {
         e.preventDefault();
 
         if (!validateInputUrl()) return;
-        if (CRCVersion && !/^\/.*/.test(shortUrl)){
+        if (CRCVersion && !/^\/.*/.test(shortUrl)) {
             setUrlInvalid(true);
             ShowToast('Please enter a valid short URL, starting with /, e.g. /custom', 'danger');
             return;
@@ -69,7 +69,6 @@ export function UrlForms() {
             const userAddress = await signer.getAddress();
             const avatar = await sdk.getAvatar(userAddress as Address);
             console.log('avatar info: ' + avatar.avatarInfo);
-
 
             const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
 
@@ -124,60 +123,60 @@ export function UrlForms() {
             </ul>
 
             {!CRCVersion && (
-            <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <input
-                        type="text"
-                        value={originalUrl}
-                        onChange={(e) => {
-                            setOriginalUrl(e.target.value);
-                            setUrlInvalid(false);
-                        }}
-                        placeholder="Original URL (e.g. https://aboutcircles.com/)"
-                        className={`form-control ${urlInvalid ? 'is-invalid' : ''}`}
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <input
+                            type="text"
+                            value={originalUrl}
+                            onChange={(e) => {
+                                setOriginalUrl(e.target.value);
+                                setUrlInvalid(false);
+                            }}
+                            placeholder="Original URL (e.g. https://aboutcircles.com/)"
+                            className={`form-control ${urlInvalid ? 'is-invalid' : ''}`}
 
-                    />
-                </div>
-                <div className="button-group mt-3">
-                    <button type="submit" className="btn btn-primary">Submit to Blockchain</button>
-                    {/* <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
+                        />
+                    </div>
+                    <div className="button-group mt-3">
+                        <button type="submit" className="btn btn-primary">Submit to Blockchain</button>
+                        {/* <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
                                         Generate QR Code
                                     </button> */}
-                </div>
-            </form>)}
+                    </div>
+                </form>)}
 
             {CRCVersion && (
-            <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <input
-                        type="text"
-                        value={originalUrl}
-                        onChange={(e) => {
-                            setOriginalUrl(e.target.value);
-                            setUrlInvalid(false);
-                        }}
-                        placeholder="Original URL (e.g. https://aboutcircles.com/)"
-                        className={`form-control ${urlInvalid ? 'is-invalid' : ''}`}
-                    />
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <input
+                            type="text"
+                            value={originalUrl}
+                            onChange={(e) => {
+                                setOriginalUrl(e.target.value);
+                                setUrlInvalid(false);
+                            }}
+                            placeholder="Original URL (e.g. https://aboutcircles.com/)"
+                            className={`form-control ${urlInvalid ? 'is-invalid' : ''}`}
+                        />
 
-                    <input
-                        type="text"
-                        value={shortUrl}
-                        onChange={(e) => {
-                            setShortUrl(e.target.value);
-                            setUrlInvalid(false);
-                        }}
-                        placeholder="Short Url (e.g. /customUrl)"
-                        className={`form-control ${/^\/.*/.test(shortUrl) ? 'is-invalid' : ''}`}
-                    />
-                </div>
-                <div className="button-group mt-3">
-                    <button type="submit" className="btn btn-primary">Submit to Blockchain</button>
-                    {/* <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
+                        <input
+                            type="text"
+                            value={shortUrl}
+                            onChange={(e) => {
+                                setShortUrl(e.target.value);
+                                setUrlInvalid(false);
+                            }}
+                            placeholder="Short Url (e.g. /customUrl)"
+                            className={`form-control ${/^\/.*/.test(shortUrl) ? 'is-invalid' : ''}`}
+                        />
+                    </div>
+                    <div className="button-group mt-3">
+                        <button type="submit" className="btn btn-primary">Submit to Blockchain</button>
+                        {/* <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
                                         Generate QR Code
                                     </button> */}
-                </div>
-            </form>)}
+                    </div>
+                </form>)}
 
         </div>
     )

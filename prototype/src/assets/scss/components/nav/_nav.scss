@@ -33,6 +33,11 @@
     .navbar-nav {
         a {
             color: $white;
+            transition: $transition;
+
+            &:hover {
+                color: $secondary-color;
+            }
         }
     }
 }
