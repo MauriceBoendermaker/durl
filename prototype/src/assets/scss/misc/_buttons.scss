@@ -84,7 +84,7 @@ button {
 
 a.btn-link {
     color: $secondary-color;
-    text-decoration: none;
+    text-decoration: underline;
     transition: color .15s ease-in-out;
 
     &:hover {
