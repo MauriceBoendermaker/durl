@@ -1,6 +1,6 @@
-# Decentralized URL Shortener (xDAI / Gnosis)
+# Decentralized URL Shortener (xDAI / Gnosis / Circles)
 
-This is a trustless, decentralized URL shortener built on the Gnosis Chain (formerly xDAI). It stores short links permanently on-chain and allows users to generate both random and custom short URLs, optionally protected by a CRC token payment.
+This is a trustless, decentralized URL shortener built on the Gnosis Chain (formerly xDAI). It stores short links permanently on-chain and allows users to generate both random and custom short URLs, optionally protected by a CRC token payment to make it fair for everyone.
 
 ---
 
