@@ -60,7 +60,7 @@ export default function Nav() {
                                                         Connect Wallet
                                                     </button>
                                                 ) : (
-                                                    <Link className="btn-link ms-2" to="/dashboard">
+                                                    <Link className="btn btn-outline-light ms-4" to="/dashboard">
                                                         Dashboard
                                                     </Link>
                                                 )}

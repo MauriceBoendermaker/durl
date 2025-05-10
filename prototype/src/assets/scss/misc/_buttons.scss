@@ -6,6 +6,12 @@ button {
     border-radius: $corner-radius;
 }
 
+.btn-outline-light {
+    &:hover {
+        color: black !important;
+    }
+}
+
 .button-group {
     display: flex;
     gap: 16px;
