@@ -5,16 +5,4 @@
     color: $white;
     display: flex;
     align-items: center;
-    .button-group {
-        display: flex;
-        gap: 16px;
-
-        button:first-of-type {
-            flex-grow: 1;
-        }
-
-        button:last-of-type {
-            white-space: nowrap;
-        }
-    }
 }
