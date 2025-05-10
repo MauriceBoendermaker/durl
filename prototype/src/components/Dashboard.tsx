@@ -69,7 +69,7 @@ function Dashboard() {
         <section className="dashboard-container">
             <div className="container py-5">
                 <div className="row justify-content-center">
-                    <div className="col-md-10 glass-card p-4">
+                    <div className="col-md-10 glass-card">
                         <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                             <h2 className="title-glow m-0">Your Shortened Links</h2>
                             <span className="text-light small">Wallet: {account}</span>
