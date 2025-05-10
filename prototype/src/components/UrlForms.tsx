@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import abi from '../abi_xDAI.json';
 import { ShowToast } from './utils/ShowToast';
 import { switchToGnosis } from 'utils/NetworkSwitcher';
+import { CRCPaymentProvider } from 'contractMethods/CRCPaymentProvider';
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
@@ -58,6 +59,8 @@ export function UrlForms() {
         }
 
         try {
+            setStatus('Switching to Gnosis...');
+            await switchToGnosis();
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
@@ -71,27 +74,18 @@ export function UrlForms() {
                     return;
                 }
 
-                setStatus('Switching to Gnosis...');
-                await switchToGnosis();
-
                 setStatus('Requesting wallet access...');
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
 
                 setStatus('Paying with CRC...');
-                const token = new ethers.Contract(CRC_TOKEN_ADDRESS, [
-                    'function transfer(address to, uint256 amount) public returns (bool)',
-                    'function decimals() public view returns (uint8)'
-                ], signer);
-
-                const decimals = await token.decimals();
-                const amount = ethers.parseUnits(CRC_PAYMENT_AMOUNT, decimals);
-                const transferTx = await token.transfer(CRC_PAYMENT_RECEIVER, amount);
-                await transferTx.wait();
+                const TxCRC = CRCPaymentProvider(signer, CRC_PAYMENT_AMOUNT, CRC_PAYMENT_RECEIVER);
 
                 ShowToast(`Paid ${CRC_PAYMENT_AMOUNT} CRC successfully.`, 'success');
+                ShowToast(`CRC Transaction confirmed in block ${(await TxCRC).blockNumber}`, 'success');
+
                 setStatus('Sending URL to blockchain...');
-                const tx = await contract.createCustomShortUrl(customId, originalUrl);
-                const receipt = await tx.wait();
+                const GasTx = await contract.createCustomShortUrl(customId, originalUrl);
+                const receipt = await GasTx.wait();
                 const iface = new ethers.Interface(abi);
                 const parsedLog = receipt.logs
                     .map((log: { topics: string[]; data: string }) => {
@@ -107,6 +101,8 @@ export function UrlForms() {
                 setGeneratedShortId(shortId);
                 setTxHash(receipt.hash);
                 setStatus('Confirmed in block ' + receipt.blockNumber);
+
+
             } else {
                 setStatus('Switching to Gnosis...');
                 await switchToGnosis();
