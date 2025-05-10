@@ -6,6 +6,10 @@ button {
     border-radius: $corner-radius;
 }
 
+.btn.active {
+    color: black !important;
+}
+
 .btn-outline-light {
     &:hover {
         color: black !important;
@@ -90,7 +94,7 @@ button {
 
 a.btn-link {
     color: $secondary-color;
-    text-decoration: underline;
+    text-decoration: none;
     transition: color .15s ease-in-out;
 
     &:hover {

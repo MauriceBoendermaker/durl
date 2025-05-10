@@ -40,6 +40,10 @@
             }
         }
     }
+
+    .nav-link.active {
+        color: $secondary-color !important;
+    }
 }
 
 .mobile-sidebar {
