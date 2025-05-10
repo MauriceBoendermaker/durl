@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import abi from '../abi.json';
 import { ShowToast } from './utils/ShowToast';
+import { switchToGnosis} from 'utils/NetworkSwitcher';
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
@@ -81,11 +82,15 @@ export function UrlForms() {
 
         try {
             setStatus('Requesting wallet access...');
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
 
             if (CRCVersion) {
+                await switchToGnosis();
+                setStatus('Requesting wallet access...');
+
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const provider = new ethers.BrowserProvider(window.ethereum);
+                const signer = await provider.getSigner();
+                const CirclesAddress = signer.getAddress();
                 setStatus('Paying with CRC...');
 
                 const erc20Abi = [
@@ -104,6 +109,10 @@ export function UrlForms() {
 
             setStatus('Switching to Sepolia...');
             await switchToSepolia();
+
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
 
             setStatus('Sending URL to blockchain...');
             const sepoliaProvider = new ethers.BrowserProvider(window.ethereum);
