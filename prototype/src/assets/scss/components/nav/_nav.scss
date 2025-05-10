@@ -33,6 +33,65 @@
     .navbar-nav {
         a {
             color: $white;
+            transition: $transition;
+
+            &:hover {
+                color: $secondary-color;
+            }
         }
     }
+}
+
+.mobile-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 75%;
+    max-width: 300px;
+    height: 100%;
+    background: rgba(15, 15, 30, 0.97);
+    backdrop-filter: blur(12px);
+    z-index: 1051;
+    padding: 2rem;
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(0);
+
+    .sidebar-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: $white;
+        font-size: 32px;
+        position: absolute;
+        top: 16px;
+        right: 20px;
+
+        &:hover {
+            color: $bad-red;
+        }
+    }
+
+    .nav-link {
+        font-size: 16px;
+        color: $white;
+        text-decoration: none;
+
+        &:hover {
+            color: #bbb;
+        }
+    }
+}
+
+.mobile-sidebar-backdrop {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    background: rgba(0, 0, 0, 0.4);
 }

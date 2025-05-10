@@ -16,6 +16,7 @@ declare global {
 
 function ShortenPage() {
     const [originalUrl, setOriginalUrl] = useState('');
+    const [shortUrl, setShortUrl] = useState('');
     const [status, setStatus] = useState('');
     const [txHash, setTxHash] = useState('');
     const [generatedShortId, setGeneratedShortId] = useState('');
@@ -24,6 +25,8 @@ function ShortenPage() {
     const [modalMouse, setModalMouse] = useState({ x: 0, y: 0 });
     const cardRef = useRef<HTMLDivElement | null>(null);
     const [urlInvalid, setUrlInvalid] = useState(false);
+    const [useCRC, setUseCRC] = useState(true);
+
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -68,7 +71,7 @@ function ShortenPage() {
             } else {
                 setStatus('Error: ' + err.message);
             }
-            
+
 
         }
     }
@@ -85,23 +88,22 @@ function ShortenPage() {
 
     function isValidUrl(string: string) {
         let url;
-        
-        try {
-          url = new URL(string);
-        } catch (_) {
-          return false;  
-        }
-      
-        return true; //url.protocol === "http:" || url.protocol === "https:";
-      }
 
-    function validateInputUrl()
-    {
+        try {
+            url = new URL(string);
+        } catch (_) {
+            return false;
+        }
+
+        return true; //url.protocol === "http:" || url.protocol === "https:";
+    }
+
+    function validateInputUrl() {
         let validUrl = isValidUrl(originalUrl);
 
         if (!validUrl) {
             setUrlInvalid(true);
-   
+
             ShowToast('Please enter a valid URL, including the protocol (e.g., https://example.com).', 'danger');
             return false;
         }
@@ -110,7 +112,7 @@ function ShortenPage() {
     }
 
     function handleQRModal() {
-        
+
         if (!validateInputUrl()) return;
 
         const fullUrl = `${PROJECT_URL}/#/${generatedShortId || 'preview'}`;
@@ -180,27 +182,85 @@ function ShortenPage() {
                     <div className="row justify-content-center mt-5">
                         <div className="col-md-8 glass-card">
                             <h1 className="title-glow pb-4">Shorten a long link</h1>
-                            <form onSubmit={handleSubmit}>
-                                <div className="mb-3">
-                                    <input
-                                        type="text"
-                                        value={originalUrl}
-                                        onChange={(e) => {
-                                            setOriginalUrl(e.target.value);
-                                            setUrlInvalid(false);
-                                        }}
-                                        placeholder="Original URL (e.g. https://aboutcircles.com/)"
-                                        className={`form-control ${urlInvalid ? 'is-invalid' : ''}`}
-                                        
-                                    />
-                                </div>
-                                <div className="button-group mt-3">
-                                    <button type="submit" className="btn btn-primary">Submit to Blockchain</button>
-                                    {/* <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
+
+                            <ul className="nav nav-tabs mb-3 border-0">
+                                <li className="nav-item">
+                                    <button
+                                        className={`nav-link ${useCRC ? 'active' : ''}`}
+                                        onClick={() => setUseCRC(true)}
+                                    >
+                                        custom CRC link
+                                    </button>
+                                </li>
+                                <li className="nav-item">
+                                    <button
+                                        className={`nav-link ${!useCRC ? 'active' : ''}`}
+                                        onClick={() => setUseCRC(false)}
+                                    >
+                                        Random link
+                                    </button>
+                                </li>
+                            </ul>
+
+                            {!useCRC && (
+                                <form onSubmit={handleSubmit}>
+                                    <div className="mb-3">
+                                        <input
+                                            type="text"
+                                            value={originalUrl}
+                                            onChange={(e) => {
+                                                setOriginalUrl(e.target.value);
+                                                setUrlInvalid(false);
+                                            }}
+                                            placeholder="Original URL (e.g. https://aboutcircles.com/)"
+                                            className={`form-control ${urlInvalid ? 'is-invalid' : ''}`}
+
+                                        />
+                                    </div>
+                                    <div className="button-group mt-3">
+                                        <button type="submit" className="btn btn-primary">Submit to Blockchain</button>
+                                        {/* <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
+                                            Generate QR Code
+                                        </button> */}
+                                    </div>
+                                </form>
+                            )}
+
+
+                            {useCRC && (
+                                <form onSubmit={handleSubmit}>
+                                    <div className="mb-3">
+                                        <input
+                                            type="text"
+                                            value={originalUrl}
+                                            onChange={(e) => {
+                                                setOriginalUrl(e.target.value);
+                                                setUrlInvalid(false);
+                                            }}
+                                            placeholder="Original URL (e.g. https://aboutcircles.com/)"
+                                            className={`mb-2 form-control ${urlInvalid ? 'is-invalid' : ''}`}
+                                        />
+
+                                        <input
+                                            type="text"
+                                            value={shortUrl}
+                                            onChange={(e) => {
+                                                setShortUrl(e.target.value);
+                                                setUrlInvalid(false);
+                                            }}
+                                            placeholder="Short Url (e.g. /customUrl)"
+                                            className={`form-control ${/^\/.*/.test(shortUrl) ? 'is-invalid' : ''}`}
+                                        />
+                                    </div>
+                                    <div className="button-group mt-3">
+                                        <button type="submit" className="btn btn-primary">Submit to Blockchain</button>
+                                        {/* <button type="button" className="btn btn-outline-light px-4" onClick={handleQRModal}>
                                         Generate QR Code
                                     </button> */}
-                                </div>
-                            </form>
+                                    </div>
+                                </form>)}
+
+
                             <div className="status mt-3">
                                 {status && <p>{status}</p>}
                                 {txHash && (

@@ -5,43 +5,4 @@
     color: $white;
     display: flex;
     align-items: center;
-
-    .form-control {
-        background-color: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: $white;
-        border-radius: $corner-radius;
-        padding: 12px 16px;
-        font-size: 14px;
-        transition: all 0.3s ease;
-
-        &:hover {
-            background-color: rgba(255, 255, 255, 0.15);
-            border-color: $primary-color;
-            box-shadow: 0 0 0 2px rgba(255, 160, 255, 0.25);
-        }
-
-        &:focus {
-            background-color: rgba(255, 255, 255, 0.15);
-            border-color: $primary-light;
-            box-shadow: 0 0 0 2px rgba(255, 160, 255, 0.75) !important;
-        }
-
-        &::placeholder {
-            color: rgba(255, 255, 255, 0.2);
-        }
-    }
-
-    .button-group {
-        display: flex;
-        gap: 16px;
-
-        button:first-of-type {
-            flex-grow: 1;
-        }
-
-        button:last-of-type {
-            white-space: nowrap;
-        }
-    }
 }
