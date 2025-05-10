@@ -6,6 +6,8 @@ import { Footer } from './components/misc/Footer';
 import ShortenPage from './components/ShortenPage';
 import Dashboard from './components/Dashboard';
 import RedirectPage from './components/utils/RedirectPage';
+import HowItWorks from 'components/How-it-works';
+import About from './components/About';
 
 import "./assets/scss/style.scss";
 
@@ -48,7 +50,8 @@ function App() {
 
       <Routes>
         <Route path="/" element={<ShortenPage />} />
-        <Route path="/faq" element={<ShortenPage />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/about" element={<About />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/:shortId" element={<RedirectPage />} />
         <Route path="*" element={<Navigate to="/" />} />

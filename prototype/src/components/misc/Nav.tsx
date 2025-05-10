@@ -52,7 +52,8 @@ export default function Nav() {
                                     <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
                                         <ul className="navbar-nav align-items-center">
                                             <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
-                                            <li className="nav-item"><Link className="nav-link" to="/faq">FAQ</Link></li>
+                                            <li className="nav-item"><Link className="nav-link" to="/how-it-works">How it works</Link></li>
+                                            <li className="nav-item"><Link className="nav-link" to="/about">About</Link></li>
                                             <li className="nav-item">
                                                 {!isConnected ? (
                                                     <button className="btn btn-outline-light ms-3" onClick={connectWallet}>
@@ -79,7 +80,8 @@ export default function Nav() {
                         <div className="sidebar-content">
                             <button className="close-btn" onClick={() => setSidebarOpen(false)}>&times;</button>
                             <Link className="nav-link" to="/" onClick={() => setSidebarOpen(false)}>Home</Link>
-                            <Link className="nav-link" to="/faq" onClick={() => setSidebarOpen(false)}>FAQ</Link>
+                            <Link className="nav-link" to="/how-it-works" onClick={() => setSidebarOpen(false)}>How it works</Link>
+                            <Link className="nav-link" to="/about" onClick={() => setSidebarOpen(false)}>About</Link>
                             {!isConnected ? (
                                 <button className="btn btn-outline-light mt-3" onClick={() => { connectWallet(); setSidebarOpen(false); }}>
                                     Connect Wallet

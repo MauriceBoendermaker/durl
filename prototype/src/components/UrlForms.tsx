@@ -7,8 +7,9 @@ import { switchToGnosis } from 'utils/NetworkSwitcher';
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
 
-const CRC_TOKEN_ADDRESS = '0xb3c3ba92f76b897f44257205851d6326485da8d6';
-const CRC_PAYMENT_RECEIVER = '0xc35196be37be06b35c3c363f8a9df2543e7dbd2c';
+const CRC_TOKEN_ADDRESS = '0xc15cbda9e25f98043facac170d74b569971293b2';
+const CRC_PAYMENT_RECEIVER = '0x4335B31E5747AD4678348589e44513Ce39ea0466';
+
 const CRC_PAYMENT_AMOUNT = '5';
 const GNOSIS_CHAIN_ID = '0x64';
 
