@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import abi from '../abi.json';
 import { ShowToast } from './utils/ShowToast';
-import { switchToGnosis} from 'utils/NetworkSwitcher';
+import { switchToGnosis, switchToSepolia} from 'utils/NetworkSwitcher';
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
@@ -38,32 +38,6 @@ export function UrlForms() {
             return false;
         }
         return true;
-    }
-
-    async function switchToSepolia() {
-        try {
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: SEPOLIA_CHAIN_ID }],
-            });
-        } catch (err: any) {
-            if (err.code === 4902) {
-                await window.ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [
-                        {
-                            chainId: SEPOLIA_CHAIN_ID,
-                            chainName: 'Sepolia Testnet',
-                            nativeCurrency: { name: 'Sepolia ETH', symbol: 'ETH', decimals: 18 },
-                            rpcUrls: ['https://sepolia.infura.io/v3/', { INFURIA_URL }],
-                            blockExplorerUrls: ['https://sepolia.etherscan.io'],
-                        },
-                    ],
-                });
-            } else {
-                throw err;
-            }
-        }
     }
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

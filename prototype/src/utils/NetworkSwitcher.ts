@@ -1,3 +1,5 @@
+const INFURIA_URL = process.env.REACT_APP_INFURA_URL as string;
+
 const GNOSIS_PARAMS = {
   chainId: '0x64',
   chainName: 'Gnosis Chain',
@@ -45,24 +47,28 @@ const SEPOLIA_PARAMS = {
 };
 
 export async function switchToSepolia() {
-  try {
-    await window.ethereum.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: SEPOLIA_PARAMS.chainId }]
-    });
-  } catch (switchError: any) {
-    if (switchError.code === 4902) {
-      try {
+    try {
         await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [SEPOLIA_PARAMS]
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0xaa36a7' }],
         });
-      } catch (addError) {
-        console.error("Error adding Sepolia:", addError);
-      }
-    } else {
-      console.error("Error switching to Sepolia:", switchError);
+    } catch (err: any) {
+        if (err.code === 4902) {
+            await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                    {
+                        chainId: '0xaa36a7',
+                        chainName: 'Sepolia Testnet',
+                        nativeCurrency: { name: 'Sepolia ETH', symbol: 'ETH', decimals: 18 },
+                        rpcUrls: ['https://sepolia.infura.io/v3/', { INFURIA_URL }],
+                        blockExplorerUrls: ['https://sepolia.etherscan.io'],
+                    },
+                ],
+            });
+        } else {
+            throw err;
+        }
     }
-  }
 }
 
