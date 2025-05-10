@@ -33,6 +33,12 @@ function ShortenPage() {
 
         if (!validateInputUrl()) return;
 
+        if (useCRC && !/^\/.*/.test(shortUrl)) {
+            setUrlInvalid(true);
+            ShowToast('Please enter a valid short URL, starting with /, e.g. /custom', 'danger');
+            return;
+        }
+
         if (!window.ethereum) {
             alert('MetaMask not detected');
             return;
