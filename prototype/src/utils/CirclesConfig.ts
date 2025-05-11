@@ -2,6 +2,8 @@ import type {CirclesConfig} from "@circles-sdk/sdk";
 import { Sdk } from '@circles-sdk/sdk';
 import {BrowserProviderContractRunner} from "@circles-sdk/adapter-ethers"
 import { GroupProfile } from "@circles-sdk/profiles";
+import { ethers } from 'ethers';
+import { AvatarInterface } from '@circles-sdk/sdk/dist/types/avatars/AvatarInterface';
 
 export const GnosisChainConfig: CirclesConfig = {
   circlesRpcUrl: 'https://static.94.138.251.148.clients.your-server.de/rpc/',
