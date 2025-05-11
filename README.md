@@ -1,6 +1,19 @@
+## Main motivation
+In a world where centralized platforms silently censor, alter, or erase content, we're building a censorship-resistant future — one short link at a time.
+
+This isn't just a regular web utility. It's a tool for digital sovereignty.
+
+Every link you create is immutable, verifiable, and yours — secured by the blockchain, owned by your wallet, and free from corporate interference.
+
+Whether you're a journalist, whistleblower, activist, or just someone who believes the web should be open and permanent, this is your infrastructure.
+
+No gatekeepers. No takedowns. Just truth, trust, and transparency.
+
+Owning short links is made equally accessible for anyone, by leveraging Circles trust groups, where users can equally mint tokens.
+
 # Decentralized URL Shortener (xDAI / Gnosis / Circles)
 
-This is a trustless, decentralized URL shortener built on the Gnosis Chain (formerly xDAI). It stores short links permanently on-chain and allows users to generate both random and custom short URLs, optionally protected by a CRC token payment to make it fair for everyone.
+This is a trustless, decentralized URL shortener built on the Gnosis Chain (formerly xDAI). It stores short links permanently on-chain and allows users to generate both random and custom short URLs, optionally protected by a CRC token payment. Since CRC is an equally mintable token for everyone, it is a fair alternitive to other forms of currency.
 
 ---
 
