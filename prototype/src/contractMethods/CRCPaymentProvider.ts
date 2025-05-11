@@ -54,14 +54,15 @@ export async function sendV2GroupCRC(
 ) {
     try {
         const senderAddress = await signer.getAddress();
-        const tokenId = BigInt(groupAddress);
+        const tokenId = BigInt(groupAddress.toLowerCase());
+        const int_amount = BigInt(amount);
 
         const contract = new ethers.Contract(mintHandlerAddress, erc1155Abi, signer);
         const tx = await contract.safeTransferFrom(
             senderAddress,
             toAddress,
             tokenId,
-            amount,
+            int_amount,
             '0x'
         );
 

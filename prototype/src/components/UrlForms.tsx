@@ -79,6 +79,7 @@ export function UrlForms() {
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
 
                 setStatus('Paying with CRC...');
+                //const TxCRC = CRCPaymentProvider(signer, CRC_PAYMENT_AMOUNT, CRC_PAYMENT_RECEIVER);
                 const TxCRC = sendV2GroupCRC(signer, '0xb320414e2a92d393A56Fdae53D19155533Bf5d1E', '0xf1b686e786d55e74fbd508decbdd0db1eabfa01a', CRC_PAYMENT_RECEIVER, CRC_PAYMENT_AMOUNT);
 
                 ShowToast(`Paid ${CRC_PAYMENT_AMOUNT} CRC successfully.`, 'success');
