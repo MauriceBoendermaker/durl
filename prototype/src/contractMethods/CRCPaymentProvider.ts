@@ -1,7 +1,6 @@
 import { sdk } from "utils/CirclesConfig";
 import { ethers } from 'ethers';
 
-
 export async function CRCPaymentProvider(signer: ethers.Signer,
     CRC_PAYMENT_AMOUNT: string,
     CRC_PAYMENT_RECEIVER: string) {
@@ -33,7 +32,10 @@ export async function CRCPaymentProvider(signer: ethers.Signer,
 }
 
 const erc1155Abi = [
-    'function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data) external'
+    'function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data) external',
+    'function balanceOf(address account, uint256 id) view returns (uint256)',
+    'function isApprovedForAll(address account, address operator) view returns (bool)',
+    'function setApprovalForAll(address operator, bool approved) external'
 ];
 
 /**
@@ -47,33 +49,42 @@ const erc1155Abi = [
  */
 export async function sendV2GroupCRC(
     signer: ethers.Signer,
-    mintHandlerAddress: string,
-    groupAddress: string,
-    toAddress: string,
-    amount: bigint | string
+    groupAvatarAddress: string, // tokenId (your CRC group)
+    toAddress: string,          // recipient
+    amount: string              // amount in CRC units (e.g. "5")
 ) {
     try {
         const senderAddress = await signer.getAddress();
-        const tokenId = BigInt(groupAddress.toLowerCase());
-        const int_amount = BigInt(amount);
 
-        const contract = new ethers.Contract(mintHandlerAddress, erc1155Abi, signer);
+        const tokenAddress = '0x3D61f0A272eC69d65F5CFF097212079aaFDe8267';
+
+        const tokenId = BigInt(`0x${groupAvatarAddress.replace(/^0x/, '')}`);
+        const intAmount = BigInt(amount);
+
+        const contract = new ethers.Contract(tokenAddress, erc1155Abi, signer);
+
+        const balance = await contract.balanceOf(senderAddress, tokenId);
+        if (balance < intAmount) throw new Error(`Insufficient CRC balance: You have ${balance}, need ${intAmount}.`);
+
+        const isApproved = await contract.isApprovedForAll(senderAddress, toAddress);
+        if (!isApproved) {
+            const approvalTx = await contract.setApprovalForAll(toAddress, true);
+            await approvalTx.wait();
+        }
+
         const tx = await contract.safeTransferFrom(
             senderAddress,
             toAddress,
             tokenId,
-            int_amount,
+            intAmount,
             '0x'
         );
 
         await tx.wait();
-        console.log(`✅ Sent ${amount} CRC (ERC-1155) to ${toAddress}`);
-        console.log('CRC Transaction confirmed in block ', tx.blockNumber);
-
+        console.log(`Sent ${amount} CRC (tokenId=${tokenId}) from ${senderAddress} to ${toAddress}`);
         return tx;
-    }
-    catch (err) {
-        console.error('Transfer failed:', err);
+    } catch (err) {
+        console.error('CRC V2 Transfer failed:', err);
         throw err;
     }
 }

@@ -3,14 +3,17 @@ import { ethers } from 'ethers';
 import abi from '../abi_xDAI.json';
 import { ShowToast } from './utils/ShowToast';
 import { switchToGnosis } from 'utils/NetworkSwitcher';
-import { CRCPaymentProvider, sendV2GroupCRC } from 'contractMethods/CRCPaymentProvider';
+import { CRCPaymentProvider } from 'contractMethods/CRCPaymentProvider';
+import { sendV2GroupCRC } from 'contractMethods/CRCPaymentProvider';
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
 
-var CRC_PAYMENT_RECEIVER = '0x266C002fd57F76138dAAf2c107202377e4C3B5A7';
+const CRC_TOKEN_ADDRESS = '0xc15cbda9e25f98043facac170d74b569971293b2';
+let CRC_PAYMENT_RECEIVER = '0x4335B31E5747AD4678348589e44513Ce39ea0466';
 
 const CRC_PAYMENT_AMOUNT = '5';
+const GNOSIS_CHAIN_ID = '0x64';
 
 export function UrlForms() {
     const [originalUrl, setOriginalUrl] = useState('');
@@ -61,7 +64,7 @@ export function UrlForms() {
             await switchToGnosis();
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
-            if (await signer.getAddress() == CRC_PAYMENT_RECEIVER){
+            if (await signer.getAddress() == CRC_PAYMENT_RECEIVER) {
                 CRC_PAYMENT_RECEIVER = '0x4335b31e5747ad4678348589e44513ce39ea0466';
             }
             const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
@@ -80,8 +83,12 @@ export function UrlForms() {
 
                 setStatus('Paying with CRC...');
                 //const TxCRC = CRCPaymentProvider(signer, CRC_PAYMENT_AMOUNT, CRC_PAYMENT_RECEIVER);
-                const TxCRC = sendV2GroupCRC(signer, '0xb320414e2a92d393A56Fdae53D19155533Bf5d1E', '0xf1b686e786d55e74fbd508decbdd0db1eabfa01a', CRC_PAYMENT_RECEIVER, CRC_PAYMENT_AMOUNT);
-
+                const TxCRC = await sendV2GroupCRC(
+                    signer,
+                    '0x4335b31e5747ad4678348589e44513ce39ea0466',
+                    CRC_PAYMENT_RECEIVER,
+                    CRC_PAYMENT_AMOUNT
+                );
                 ShowToast(`Paid ${CRC_PAYMENT_AMOUNT} CRC successfully.`, 'success');
                 ShowToast(`CRC Transaction confirmed in block ${(await TxCRC).blockNumber}`, 'success');
 
@@ -103,8 +110,6 @@ export function UrlForms() {
                 setGeneratedShortId(shortId);
                 setTxHash(receipt.hash);
                 setStatus('Confirmed in block ' + receipt.blockNumber);
-
-
             } else {
                 setStatus('Switching to Gnosis...');
                 await switchToGnosis();
