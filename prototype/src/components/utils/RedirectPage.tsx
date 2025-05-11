@@ -39,7 +39,25 @@ function RedirectPage() {
                     throw new Error("Empty destination after both attempts");
                 }
 
-                window.location.href = destination;
+                try {
+                    await fetch('http://localhost:3001/track', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            shortId,
+                            timestamp: Date.now(),
+                            referrer: document.referrer,
+                            userAgent: navigator.userAgent
+                        })
+                    });
+                    console.log('Analytics posted successfully');
+                } catch (err) {
+                    console.warn('Analytics failed:', err);
+                }
+
+                setTimeout(() => {
+                    window.location.href = destination;
+                }, 300);
             } catch (err) {
                 console.error("Redirect failed:", err);
                 window.location.href = '/';
