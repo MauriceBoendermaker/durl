@@ -208,20 +208,19 @@ export function UrlForms() {
                 <div className="mt-2">
                     <span>Your shortened URL: </span>
                     <a
-                        href={`https://durl.dev/${generatedShortId}`}
+                        href={`https://durl.dev/#/${generatedShortId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-light underline"
-                    >
-                        https://durl.dev/{generatedShortId} points to {originalUrl}
-                    </a>
+                    ><br/>
+                        https://durl.dev/#/{generatedShortId}</a> points to {originalUrl}
                     <a
                         href={`https://gnosisscan.io/tx/${txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-light"
                     >
-                        View on GnosisScan
+                        <br/> View on GnosisScan
                     </a>
 
                 </div>
