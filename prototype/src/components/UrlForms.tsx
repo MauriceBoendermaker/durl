@@ -3,17 +3,13 @@ import { ethers } from 'ethers';
 import abi from '../abi_xDAI.json';
 import { ShowToast } from './utils/ShowToast';
 import { switchToGnosis } from 'utils/NetworkSwitcher';
-import { CRCPaymentProvider } from 'contractMethods/CRCPaymentProvider';
-import { sendV2GroupCRC } from 'contractMethods/CRCPaymentProvider';
+import { CRCPaymentProvider, sendV2GroupCRC } from 'contractMethods/CRCPaymentProvider';
 
 const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
-const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
 
-const CRC_TOKEN_ADDRESS = '0xc15cbda9e25f98043facac170d74b569971293b2';
-let CRC_PAYMENT_RECEIVER = '0x4335B31E5747AD4678348589e44513Ce39ea0466';
+let CRC_PAYMENT_RECEIVER = '0x266C002fd57F76138dAAf2c107202377e4C3B5A7';
 
 const CRC_PAYMENT_AMOUNT = '5';
-const GNOSIS_CHAIN_ID = '0x64';
 
 export function UrlForms() {
     const [originalUrl, setOriginalUrl] = useState('');
@@ -212,20 +208,19 @@ export function UrlForms() {
                 <div className="mt-2">
                     <span>Your shortened URL: </span>
                     <a
-                        href={`https://durl.dev/${generatedShortId}`}
+                        href={`https://durl.dev/#/${generatedShortId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-light underline"
-                    >
-                        https://durl.dev/{generatedShortId} points to {originalUrl}
-                    </a>
+                    ><br/>
+                        https://durl.dev/#/{generatedShortId}</a> points to {originalUrl}
                     <a
                         href={`https://gnosisscan.io/tx/${txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-light"
                     >
-                        View on GnosisScan
+                        <br/> View on GnosisScan
                     </a>
 
                 </div>

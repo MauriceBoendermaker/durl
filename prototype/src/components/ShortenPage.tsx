@@ -3,7 +3,6 @@ import MouseDots from './misc/MouseDots';
 import { QRCodeCanvas } from 'qrcode.react';
 import { UrlForms } from './UrlForms';
 
-const CONTRACT_ADDRESS = process.env.REACT_APP_CONTRACT_ADDRESS as string;
 const PROJECT_URL = process.env.REACT_APP_PROJECT_URL as string;
 
 declare global {
