@@ -31,6 +31,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "build": "react-scripts build",
     "start": "concurrently \"npm run start-client\" \"npm run start-analytics\"",
     "start-client": "react-scripts start",
     "start-analytics": "node ./analytics/server.cjs"
