@@ -13,10 +13,19 @@ function Dashboard() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const [qrTarget, setQrTarget] = useState<string | null>(null);
+    const [visitCounts, setVisitCounts] = useState<Record<string, number>>({});
 
     useEffect(() => {
         async function loadLinks() {
             if (!window.ethereum) return;
+
+            try {
+                const res = await fetch('http://localhost:3001/stats');
+                const stats = await res.json();
+                setVisitCounts(stats);
+            } catch (e) {
+                console.warn('Could not fetch visit stats');
+            }
 
             try {
                 setLoading(true);
@@ -46,6 +55,18 @@ function Dashboard() {
         }
 
         loadLinks();
+
+        const statsInterval = setInterval(async () => {
+            try {
+                const res = await fetch('http://localhost:3001/stats');
+                const stats = await res.json();
+                setVisitCounts(stats);
+            } catch (e) {
+                console.warn('Could not refresh visit stats');
+            }
+        }, 5000);
+
+        return () => clearInterval(statsInterval);
     }, []);
 
     function copyToClipboard(shortId: string) {
@@ -92,6 +113,7 @@ function Dashboard() {
                                             <th>Short link</th>
                                             <th>Original URL</th>
                                             <th className="text-center">Actions</th>
+                                            <th className="text-center">Visits</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -146,6 +168,9 @@ function Dashboard() {
                                                                 <i className="fas fa-qrcode" />
                                                             </button>
                                                         </div>
+                                                    </td>
+                                                    <td className="text-center">
+                                                        {visitCounts[link.shortId] || 0}
                                                     </td>
                                                 </tr>
                                             );

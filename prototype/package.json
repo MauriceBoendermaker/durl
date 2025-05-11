@@ -3,6 +3,7 @@
   "name": "prototype",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@circles-sdk/adapter-ethers": "^0.24.0",
     "@circles-sdk/data": "^0.24.0",
@@ -30,10 +31,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "concurrently \"npm run start-client\" \"npm run start-analytics\"",
+    "start-client": "react-scripts start",
+    "start-analytics": "node ./analytics/server.cjs"
   },
   "eslintConfig": {
     "extends": [
@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@types/react-router-dom": "^5.3.3",
-    "@types/three": "^0.176.0"
+    "@types/three": "^0.176.0",
+    "concurrently": "^9.1.2"
   }
 }
