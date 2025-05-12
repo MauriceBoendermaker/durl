@@ -61,7 +61,7 @@ Make sure MetaMask is connected to Gnosis Chain:
 ```json
 {
   "chainId": "0x64",
-  "chainName": "Gnosis Chain",
+  "chainName": "Gnosis",
   "nativeCurrency": {
     "name": "xDAI",
     "symbol": "xDAI",
