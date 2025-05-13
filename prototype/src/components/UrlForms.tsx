@@ -212,7 +212,7 @@ export function UrlForms() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-light underline"
-                    ><br/>
+                    ><br />
                         https://durl.dev/#/{generatedShortId}</a> points to {originalUrl}
                     <a
                         href={`https://gnosisscan.io/tx/${txHash}`}
@@ -220,7 +220,7 @@ export function UrlForms() {
                         rel="noopener noreferrer"
                         className="text-light"
                     >
-                        <br/> View on GnosisScan
+                        <br /> View on GnosisScan
                     </a>
 
                 </div>
