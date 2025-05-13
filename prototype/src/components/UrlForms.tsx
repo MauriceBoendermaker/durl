@@ -58,11 +58,19 @@ export function UrlForms() {
         try {
             setStatus('Switching to Gnosis...');
             await switchToGnosis();
+
+            if (typeof window === 'undefined' || !window.ethereum) {
+                ShowToast('MetaMask not detected. Please install MetaMask to continue.', 'danger');
+                return;
+            }
+
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
-            if (await signer.getAddress() == CRC_PAYMENT_RECEIVER) {
+
+            if ((await signer.getAddress()) === CRC_PAYMENT_RECEIVER) {
                 CRC_PAYMENT_RECEIVER = '0x4335b31e5747ad4678348589e44513ce39ea0466';
             }
+
             const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
 
             if (CRCVersion) {
@@ -75,7 +83,12 @@ export function UrlForms() {
                 }
 
                 setStatus('Requesting wallet access...');
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+
+                if (!accounts || accounts.length === 0) {
+                    ShowToast('Please connect your wallet first using the button above.', 'danger');
+                    return;
+                }
 
                 setStatus('Paying with CRC...');
                 //const TxCRC = CRCPaymentProvider(signer, CRC_PAYMENT_AMOUNT, CRC_PAYMENT_RECEIVER);
@@ -111,7 +124,12 @@ export function UrlForms() {
                 await switchToGnosis();
 
                 setStatus('Requesting wallet access...');
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+
+                if (!accounts || accounts.length === 0) {
+                    ShowToast('Please connect your wallet first using the button above.', 'danger');
+                    return;
+                }
 
                 setStatus('Sending URL to blockchain...');
                 const tx = await contract.generateShortUrl(originalUrl);
