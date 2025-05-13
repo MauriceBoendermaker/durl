@@ -282,8 +282,4 @@ package-lock.json
 *.env
 *.sol
 
-*.pptx
-*.docx
-*.pdf
-
 prototype/analytics/logs.json
