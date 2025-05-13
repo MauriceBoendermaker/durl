@@ -281,3 +281,5 @@ package-lock.json
 .env
 *.env
 *.sol
+
+prototype/analytics/logs.json

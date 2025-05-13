@@ -1,11 +1,14 @@
-import { sdk } from "utils/CirclesConfig";
+import { createCirclesSdk } from "utils/CirclesConfig";
 import { ethers } from 'ethers';
 
-export async function CRCPaymentProvider(signer: ethers.Signer,
+export async function CRCPaymentProvider(
+    signer: ethers.Signer,
     CRC_PAYMENT_AMOUNT: string,
-    CRC_PAYMENT_RECEIVER: string) {
-
+    CRC_PAYMENT_RECEIVER: string
+) {
     try {
+        const sdk = await createCirclesSdk();
+
         const senderAddress = await signer.getAddress();
         const avatar = await sdk.getAvatar(senderAddress as `0x${string}`);
         const process = await avatar.isTrustedBy(CRC_PAYMENT_RECEIVER as `0x${string}`);

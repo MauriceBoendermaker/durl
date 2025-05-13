@@ -58,11 +58,19 @@ export function UrlForms() {
         try {
             setStatus('Switching to Gnosis...');
             await switchToGnosis();
+
+            if (typeof window === 'undefined' || !window.ethereum) {
+                ShowToast('MetaMask not detected. Please install MetaMask to continue.', 'danger');
+                return;
+            }
+
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
-            if (await signer.getAddress() == CRC_PAYMENT_RECEIVER) {
+
+            if ((await signer.getAddress()) === CRC_PAYMENT_RECEIVER) {
                 CRC_PAYMENT_RECEIVER = '0x4335b31e5747ad4678348589e44513ce39ea0466';
             }
+
             const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
 
             if (CRCVersion) {
@@ -75,7 +83,12 @@ export function UrlForms() {
                 }
 
                 setStatus('Requesting wallet access...');
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+
+                if (!accounts || accounts.length === 0) {
+                    ShowToast('Please connect your wallet first using the button above.', 'danger');
+                    return;
+                }
 
                 setStatus('Paying with CRC...');
                 //const TxCRC = CRCPaymentProvider(signer, CRC_PAYMENT_AMOUNT, CRC_PAYMENT_RECEIVER);
@@ -111,7 +124,12 @@ export function UrlForms() {
                 await switchToGnosis();
 
                 setStatus('Requesting wallet access...');
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+
+                if (!accounts || accounts.length === 0) {
+                    ShowToast('Please connect your wallet first using the button above.', 'danger');
+                    return;
+                }
 
                 setStatus('Sending URL to blockchain...');
                 const tx = await contract.generateShortUrl(originalUrl);
@@ -150,7 +168,7 @@ export function UrlForms() {
                         className={`nav-link ${CRCVersion ? 'active' : ''}`}
                         onClick={() => setCRCVersion(true)}
                     >
-                        Custom CRC Link
+                        Custom URL
                     </button>
                 </li>
                 <li className="nav-item">
@@ -158,7 +176,7 @@ export function UrlForms() {
                         className={`nav-link ${!CRCVersion ? 'active' : ''}`}
                         onClick={() => setCRCVersion(false)}
                     >
-                        Random Link
+                        Random
                     </button>
                 </li>
             </ul>
@@ -177,17 +195,31 @@ export function UrlForms() {
                     />
 
                     {CRCVersion && (
-                        <input
-                            type="text"
-                            value={shortUrl}
-                            onChange={(e) => {
-                                setShortUrl(e.target.value);
-                                setUrlInvalid(false);
-                                setShortUrlExistsError(false);
-                            }}
-                            placeholder="Short URL (e.g. /customLink)"
-                            className={`form-control mt-2 ${shortUrlExistsError || !/^\/.*/.test(shortUrl) ? 'is-invalid' : ''}`}
-                        />
+                        <div className="input-group mt-3">
+                            <span className="input-group-text">durl.dev/</span>
+                            <input
+                                type="text"
+                                value={shortUrl}
+                                onChange={(e) => {
+                                    let value = e.target.value.trim();
+
+                                    value = value.replace(/\s+/g, '-');
+
+                                    value = value.replace(/[^a-zA-Z0-9_-]/g, '');
+
+                                    if (!value.startsWith('/')) {
+                                        value = '/' + value;
+                                    }
+
+                                    setShortUrl(value);
+                                    setUrlInvalid(false);
+                                    setShortUrlExistsError(false);
+                                }}
+
+                                placeholder="custom-link"
+                                className={`form-control ${shortUrlExistsError || !/^\/.*/.test(shortUrl) ? 'is-invalid' : ''}`}
+                            />
+                        </div>
                     )}
 
                     {shortUrlExistsError && (
@@ -201,6 +233,12 @@ export function UrlForms() {
                         Submit to Blockchain
                     </button>
                 </div>
+
+                <div className="price-disclaimer small mt-3">
+                    {CRCVersion
+                        ? 'Cost: 5 CRC + xDAI gas fee'
+                        : 'Cost: only xDAI gas fee'}
+                </div>
             </form>
 
             {status && <div className="alert alert-info mt-3">{status}</div>}
@@ -212,7 +250,8 @@ export function UrlForms() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-light underline"
-                    ><br/>
+                    >
+                        <br />
                         https://durl.dev/#/{generatedShortId}</a> points to {originalUrl}
                     <a
                         href={`https://gnosisscan.io/tx/${txHash}`}
@@ -220,7 +259,8 @@ export function UrlForms() {
                         rel="noopener noreferrer"
                         className="text-light"
                     >
-                        <br/> View on GnosisScan
+                        <br />
+                        View on GnosisScan
                     </a>
 
                 </div>
