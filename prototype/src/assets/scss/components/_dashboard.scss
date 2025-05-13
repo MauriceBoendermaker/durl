@@ -5,4 +5,8 @@
     color: $white;
     display: flex;
     align-items: center;
+
+    .glass-card {
+        overflow-y: scroll;
+    }
 }

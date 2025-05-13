@@ -92,8 +92,8 @@ function ShortenPage() {
                         <div className="col-md-8 glass-card">
                             <h1 className="title-glow pb-4">Shorten a long link</h1>
                             <UrlForms />
-                            <div className="status mt-3">
-                                {status && <p>{status}</p>}
+                            <div className="status">
+                                {status && <p className="">{status}</p>}
                                 {txHash && (
                                     <a href={`https://sepolia.etherscan.io/tx/${txHash}`} target="_blank" rel="noopener noreferrer">
                                         View on Etherscan
