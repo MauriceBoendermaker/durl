@@ -196,4 +196,6 @@ main {
     backdrop-filter: blur(10px);
     box-shadow: $box-shadow-soft;
     padding: 30px;
+    max-height: 75vh;
+    overflow: scroll;
 }
