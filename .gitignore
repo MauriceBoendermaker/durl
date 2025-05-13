@@ -281,4 +281,4 @@ package-lock.json
 .env
 *.env
 *.sol
-logs.json
+*/logs.json
