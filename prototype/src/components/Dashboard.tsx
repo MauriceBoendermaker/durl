@@ -28,8 +28,19 @@ function Dashboard() {
             }
 
             try {
+                if (typeof window === 'undefined' || !window.ethereum) {
+                    ShowToast('MetaMask not detected. Please install MetaMask to use this feature.', 'danger');
+                    return;
+                }
+
                 setLoading(true);
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (!accounts || accounts.length === 0) {
+                    ShowToast('Wallet connection rejected or failed.', 'danger');
+                    return;
+                }
+
                 const provider = new ethers.BrowserProvider(window.ethereum);
                 const signer = await provider.getSigner();
                 const address = await signer.getAddress();
@@ -44,6 +55,7 @@ function Dashboard() {
                         return { shortId, url };
                     })
                 );
+
 
                 setLinks(formatted);
                 setError('');
